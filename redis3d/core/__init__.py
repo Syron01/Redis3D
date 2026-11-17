@@ -1,10 +1,10 @@
-from axion3d.core.hardware_guard import (
+from redis3d.core.hardware_guard import (
     HardwareReport,
     VRAMBudgetExceeded,
     VRAMBudgetGuard,
     probe_hardware,
 )
-from axion3d.core.telemetry import LatencyBreakdown, vram_snapshot
+from redis3d.core.telemetry import LatencyBreakdown, vram_snapshot
 
 __all__ = [
     "HardwareReport",

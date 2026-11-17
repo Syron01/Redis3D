@@ -1,4 +1,4 @@
-# axion3d-pro
+# Redis3D
 
 RTX 5060 Laptop (sm_120) üzerinde 2 GB VRAM tavanıyla çalışan yerel 3D üretim motoru. Hedef: bulut 3D servislerine (Tripo, Meshy) cihazda çalışan bir alternatif. Dış API yok, model ağırlıkları indirilmiyor.
 

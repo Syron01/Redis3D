@@ -1,4 +1,4 @@
-# AXION-3D PRO runtime deps (RTX 5060 Laptop, sm_120, CUDA 12.8)
+# Redis3D runtime deps (RTX 5060 Laptop, sm_120, CUDA 12.8)
 # Install: pip install -r requirements.txt
 --extra-index-url https://download.pytorch.org/whl/cu128
 torch>=2.11.0

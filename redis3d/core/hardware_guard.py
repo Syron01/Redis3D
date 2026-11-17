@@ -16,7 +16,7 @@ from typing import Optional
 import pynvml
 import torch
 
-from axion3d.core.telemetry import (
+from redis3d.core.telemetry import (
     _MB,
     _nvml_handle,
     nvml_process_vram_mb,
@@ -172,7 +172,7 @@ def _check_fp8(device: torch.device) -> tuple[bool, str]:
 
 def probe_hardware(require_sm120: bool = True) -> HardwareReport:
     if not torch.cuda.is_available():
-        raise HardwareError("CUDA unavailable: AXION-3D requires the local NVIDIA GPU")
+        raise HardwareError("CUDA unavailable: Redis3D requires the local NVIDIA GPU")
     device = torch.device("cuda")
     cap = torch.cuda.get_device_capability(device)
     handle = _nvml_handle()

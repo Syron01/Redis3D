@@ -1,4 +1,4 @@
-# AXION-3D PRO hardware contract (roadfinal.md §1) — measured on this machine
+# Redis3D hardware contract (roadfinal.md §1) — measured on this machine
 gpu:
   name: "NVIDIA GeForce RTX 5060 Laptop GPU"
   arch: blackwell_gb206

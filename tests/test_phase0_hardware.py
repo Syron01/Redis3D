@@ -12,14 +12,14 @@ from __future__ import annotations
 import pytest
 import torch
 
-from axion3d.core.hardware_guard import (
+from redis3d.core.hardware_guard import (
     HardwareReport,
     VRAMBudgetExceeded,
     VRAMBudgetGuard,
     power_warnings,
     probe_hardware,
 )
-from axion3d.core.telemetry import (
+from redis3d.core.telemetry import (
     LatencyBreakdown,
     nvml_process_vram_mb,
     vram_snapshot,
@@ -159,6 +159,6 @@ def test_utf8_turkish_path_safety(tmp_path):
     from pathlib import Path
 
     p = Path(tmp_path) / "Türkçe_ışıl_güç_şirket_ÖÇĞİŞÜ.glb"
-    payload = "AXION-3D PRO — Türkçe karakter testi: çğıöşü İI ığü"
+    payload = "Redis3D — Türkçe karakter testi: çğıöşü İI ığü"
     p.write_text(payload, encoding="utf-8")
     assert p.read_text(encoding="utf-8") == payload
