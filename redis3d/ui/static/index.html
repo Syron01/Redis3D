@@ -1,35 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Redis3D Pro Studio — Tactile 3D Foundation Workstation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Redis3D Pro Studio</title>
   <style>
     :root {
-      /* Warm Alabaster & Matte Charcoal + Oat Cream Design Tokens */
-      --canvas-bg: #E5E6E8;
-      --canvas-glow: #F2F2F0;
-      --chassis-dark: #1C1C1B;
-      --chassis-elevated: #262624;
-      --chassis-track: #2D2D2B;
-      --chassis-thumb: #4B4A47;
-      --cream-surface: #EFECE6;
-      --cream-card: #F8F6F2;
-      --cream-subtle: #E4E0D8;
-      --cream-border: rgba(28, 28, 27, 0.08);
-      --dark-border: rgba(255, 255, 255, 0.08);
+      --bg-outer: #E7E6E2;
+      --dark-panel: #1C1C1B;
+      --dark-card: #252523;
+      --dark-track: #2D2D2B;
+      --dark-thumb: #4B4A47;
+      --cream-card: #EFECE6;
+      --stage-card: #F6F4EF;
+      --cream-track: #E5E1D9;
       --ink-dark: #1C1C1B;
       --ink-muted: #76726A;
-      --ink-soft: #9E9A92;
       --ink-light: #F3F0EA;
       --ink-light-muted: rgba(243, 240, 234, 0.56);
-      --blob-center: #1D1C1B;
-      --blob-mid: #4E433F;
-      --blob-rim: #87766F;
-      --shadow-chassis: 0 32px 68px -18px rgba(20, 20, 19, 0.34), 0 10px 24px -10px rgba(20, 20, 19, 0.16);
-      --shadow-surface: 0 24px 56px -16px rgba(20, 20, 19, 0.12), 0 4px 14px -4px rgba(20, 20, 19, 0.06);
-      --shadow-pill: 0 2px 8px rgba(20, 20, 19, 0.08), 0 1px 2px rgba(20, 20, 19, 0.04);
-      --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif;
+      --border-dark: rgba(255, 255, 255, 0.08);
+      --border-light: rgba(28, 28, 27, 0.08);
+      --shadow-soft: 0 20px 50px -14px rgba(20, 20, 19, 0.14);
+      --shadow-pill: 0 2px 8px rgba(20, 20, 19, 0.08);
+      --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif;
     }
 
     * {
@@ -37,644 +30,493 @@
       margin: 0;
       padding: 0;
       -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
     }
 
     html, body {
-      min-height: 100%;
-      font-family: var(--font-sans);
+      height: 100%;
+      font-family: var(--font);
+      background: var(--bg-outer);
       color: var(--ink-dark);
-      background: radial-gradient(circle at 22% 18%, var(--canvas-glow) 0%, var(--canvas-bg) 58%, #D8DADC 100%);
-      overflow-x: hidden;
+      overflow: hidden;
     }
 
-    /* Main Responsive Stage (8pt grid, universal fluidity) */
-    .studio-stage {
-      width: 100%;
-      max-width: 1380px;
-      min-height: 100vh;
-      margin: 0 auto;
-      padding: clamp(16px, 3vw, 32px);
+    /* Full-Screen 3D Studio Layout (Tripo / Meshy Architecture) */
+    .studio {
+      height: 100vh;
+      width: 100vw;
+      padding: 14px;
       display: grid;
-      grid-template-columns: minmax(320px, 396px) minmax(0, 1fr);
-      gap: clamp(16px, 2.5vw, 28px);
-      align-items: stretch;
+      grid-template-columns: 344px minmax(0, 1fr);
+      gap: 14px;
     }
 
-    @media (max-width: 980px) {
-      .studio-stage {
+    @media (max-width: 900px) {
+      html, body { overflow: auto; }
+      .studio {
+        height: auto;
+        min-height: 100vh;
         grid-template-columns: 1fr;
-        max-width: 520px;
-        padding: 16px;
       }
-      .viewport-shell {
-        min-height: 500px;
-      }
+      .viewport-card { min-height: 520px; }
     }
 
     /* ============================================================
-       LEFT TACTILE CONSOLE CHASSIS (Photo-Matched Dark + Oat Cream)
-       Outer R = 44px, Inner Cream Padding P = 10px => Cream R = 34px
+       SOL KONTROL PANELİ (#1C1C1B + #EFECE6 Alt Kart)
+       Dış R = 30px, Alt Kart Margin P = 8px => İç R = 22px
        ============================================================ */
-    .device-chassis {
-      position: relative;
-      background: var(--chassis-dark);
-      border-radius: 44px;
-      padding: 10px;
+    .sidebar {
+      background: var(--dark-panel);
+      border-radius: 30px;
+      padding: 8px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      box-shadow: var(--shadow-chassis);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      min-height: 760px;
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
     }
 
-    /* Subtle tactile side key like hardware bezel in photo */
-    .device-chassis::after {
-      content: "";
-      position: absolute;
-      right: -3px;
-      top: 136px;
-      width: 3px;
-      height: 52px;
-      background: #2C2C2A;
-      border-radius: 0 3px 3px 0;
-    }
-
-    .dark-upper {
-      padding: 14px 16px 12px;
+    .sidebar-top {
+      padding: 14px 14px 10px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
       flex: 1;
+      min-height: 0;
     }
 
-    /* Top Header Row */
-    .top-bar {
+    .brand-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
-      min-height: 40px;
+      padding: 2px 4px;
     }
 
-    .brand-left {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .icon-circle-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 9999px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      background: transparent;
+    .brand-name {
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
       color: var(--ink-light);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: background 0.18s ease, transform 0.12s ease;
-    }
-    .icon-circle-btn:hover {
-      background: var(--chassis-elevated);
-    }
-    .icon-circle-btn:active {
-      transform: scale(0.95);
     }
 
-    .brand-title {
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: -0.015em;
-      color: var(--ink-light);
-      opacity: 0.9;
-    }
-
-    /* Micro View Switcher Pill on Dark Track */
-    .dark-seg-track {
-      display: inline-flex;
-      background: var(--chassis-track);
-      padding: 3px;
+    /* Minimal Pro Pill Toggle */
+    .pro-pill {
+      width: 58px;
+      height: 28px;
       border-radius: 9999px;
-      border: 1px solid var(--dark-border);
-    }
-    .dark-seg-btn {
-      border: none;
-      background: transparent;
-      color: var(--ink-light-muted);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-      padding: 5px 11px;
-      border-radius: 9999px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .dark-seg-btn.active {
-      background: var(--chassis-thumb);
-      color: var(--ink-light);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.28);
-    }
-
-    /* Exact "Pro" Pill Toggle Switch from Photo */
-    .pro-toggle {
-      position: relative;
-      width: 60px;
-      height: 30px;
-      border-radius: 9999px;
-      background: var(--chassis-track);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      cursor: pointer;
-      padding: 3px;
+      background: var(--dark-track);
+      border: 1px solid var(--border-dark);
+      padding: 2px;
       display: flex;
       align-items: center;
-      transition: background 0.25s ease;
-      flex-shrink: 0;
+      cursor: pointer;
     }
-    .pro-thumb {
-      width: 24px;
-      height: 24px;
+    .pro-dot {
+      width: 22px;
+      height: 22px;
       border-radius: 9999px;
-      background: var(--chassis-thumb);
+      background: var(--dark-thumb);
       color: var(--ink-light);
       font-size: 9px;
       font-weight: 600;
-      letter-spacing: 0.02em;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      transform: translateX(28px);
-      transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1), background 0.25s ease;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+      transform: translateX(30px);
+      transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), background 0.2s;
     }
-    .pro-toggle[data-pro="false"] .pro-thumb {
-      transform: translateX(0px);
+    .pro-pill[data-pro="false"] .pro-dot {
+      transform: translateX(0);
       background: #333330;
       color: var(--ink-light-muted);
     }
 
-    /* Centerpiece Interactive Dial / Organic Morph Stage */
-    .instrument-stage {
-      position: relative;
-      height: 268px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      user-select: none;
+    /* Metinden / Görselden Sekme Kapsülü */
+    .mode-track {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--dark-track);
+      padding: 3px;
+      border-radius: 9999px;
+      border: 1px solid var(--border-dark);
     }
-
-    .instrument-pane {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transform: scale(0.97);
-      transition: opacity 0.24s ease, transform 0.24s ease;
-    }
-    .instrument-pane.active {
-      opacity: 1;
-      pointer-events: auto;
-      transform: scale(1);
-    }
-
-    /* 1. Radial 40-Tick Dial (Left Photo Style) */
-    .dial-wrap {
-      position: relative;
-      width: 248px;
-      height: 248px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .dial-svg {
-      width: 100%;
-      height: 100%;
-      overflow: visible;
-    }
-    .dial-center {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none;
-    }
-    .dial-value-row {
-      display: inline-flex;
-      align-items: flex-start;
-      color: var(--ink-light);
-      line-height: 1;
-    }
-    .dial-num {
-      font-size: 52px;
-      font-weight: 300;
-      letter-spacing: -0.04em;
-      font-variant-numeric: tabular-nums;
-    }
-    .dial-unit {
-      font-size: 16px;
-      font-weight: 400;
-      color: var(--ink-light-muted);
-      margin-top: 6px;
-      margin-left: 3px;
-    }
-    .dial-sub {
-      margin-top: 6px;
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.04em;
-      color: var(--ink-light-muted);
-    }
-    .dial-mb {
-      margin-top: 3px;
-      font-size: 10px;
-      font-variant-numeric: tabular-nums;
-      color: rgba(243, 240, 234, 0.36);
-    }
-
-    /* 2. Organic Blob Morph Pad (Right Photo Style) */
-    .morph-wrap {
-      position: relative;
-      width: 258px;
-      height: 258px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      touch-action: none;
-    }
-    .axis-label {
-      position: absolute;
-      font-size: 8.5px;
-      font-weight: 600;
-      letter-spacing: 0.16em;
-      color: rgba(243, 240, 234, 0.65);
-      pointer-events: none;
-    }
-    .axis-top { top: 6px; left: 50%; transform: translateX(-50%); }
-    .axis-bottom { bottom: 6px; left: 50%; transform: translateX(-50%); }
-    .axis-left { left: -12px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
-    .axis-right { right: -8px; top: 50%; transform: translateY(-50%) rotate(90deg); }
-
-    .morph-svg {
-      width: 216px;
-      height: 216px;
-      overflow: visible;
-      cursor: crosshair;
-    }
-
-    /* Dark Surface Prompt & Image Capsule */
-    .prompt-dock {
-      background: var(--chassis-elevated);
-      border: 1px solid var(--dark-border);
-      border-radius: 20px;
-      padding: 10px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .prompt-dock-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 11px;
-      color: var(--ink-light-muted);
-    }
-    .prompt-input {
-      width: 100%;
-      background: transparent;
+    .mode-tab {
+      height: 34px;
       border: none;
-      outline: none;
+      background: transparent;
+      color: var(--ink-light-muted);
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 500;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .mode-tab.active {
+      background: var(--dark-thumb);
+      color: var(--ink-light);
+      font-weight: 600;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Ana Girdi Alanı */
+    .input-pane {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+      min-height: 0;
+    }
+    .input-pane.active {
+      display: flex;
+    }
+
+    .prompt-box {
+      width: 100%;
+      flex: 1;
+      min-height: 128px;
+      background: var(--dark-card);
+      border: 1px solid var(--border-dark);
+      border-radius: 18px;
+      padding: 14px;
       color: var(--ink-light);
       font-family: inherit;
-      font-size: 13px;
-      line-height: 1.4;
+      font-size: 13.5px;
+      line-height: 1.5;
       resize: none;
+      outline: none;
+      transition: border-color 0.16s;
     }
-    .prompt-input::placeholder {
+    .prompt-box:focus {
+      border-color: rgba(243, 240, 234, 0.28);
+    }
+    .prompt-box::placeholder {
       color: rgba(243, 240, 234, 0.34);
     }
-    .ref-row {
+
+    /* Görsel Sürükle & Bırak Alanı */
+    .drop-zone {
+      position: relative;
+      flex: 1;
+      min-height: 150px;
+      background: var(--dark-card);
+      border: 1.5px dashed rgba(243, 240, 234, 0.18);
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px;
+      text-align: center;
+      color: var(--ink-light-muted);
+      cursor: pointer;
+      overflow: hidden;
+      transition: border-color 0.16s, background 0.16s;
+    }
+    .drop-zone:hover {
+      border-color: rgba(243, 240, 234, 0.38);
+      background: #2A2A27;
+    }
+    .drop-zone img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+    .drop-zone.has-image img {
+      display: block;
+    }
+    .clear-img-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 26px;
+      height: 26px;
+      border-radius: 9999px;
+      border: none;
+      background: rgba(28, 28, 27, 0.8);
+      color: var(--ink-light);
+      font-size: 14px;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+    .drop-zone.has-image .clear-img-btn {
+      display: inline-flex;
+    }
+
+    .rig-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      padding: 6px 6px 2px;
+      font-size: 12.5px;
+      color: var(--ink-light-muted);
     }
-    .upload-pill {
+
+    .mini-switch {
+      width: 42px;
+      height: 24px;
+      border-radius: 9999px;
+      background: var(--dark-track);
+      border: 1px solid var(--border-dark);
+      padding: 2px;
+      cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      background: var(--chassis-track);
-      color: var(--ink-light);
-      border: 1px solid var(--dark-border);
+    }
+    .mini-switch span {
+      width: 18px;
+      height: 18px;
       border-radius: 9999px;
-      padding: 5px 12px;
-      font-size: 11px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.16s ease;
+      background: var(--ink-light);
+      transform: translateX(18px);
+      transition: transform 0.2s ease, opacity 0.2s;
     }
-    .upload-pill:hover {
-      background: var(--chassis-thumb);
-    }
-    .ref-status {
-      font-size: 11px;
-      color: rgba(243, 240, 234, 0.45);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      max-width: 170px;
+    .mini-switch[data-on="false"] span {
+      transform: translateX(0);
+      opacity: 0.45;
     }
 
     /* ============================================================
-       LOWER WARM OAT CREAM SHEET (#EFECE6, R_inner = 34px)
-       Exact layout of "Laras Espresso / Arabica" + Dual Metrics + Bottom Pills
+       ALT SICAK YULAF KREM KART (#EFECE6, R_iç = 22px)
        ============================================================ */
-    .cream-sheet {
-      background: var(--cream-surface);
-      border-radius: 34px;
-      padding: 24px 18px 14px;
+    .cream-card {
+      background: var(--cream-card);
+      border-radius: 22px;
+      padding: 18px 14px 12px;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 20px;
-      color: var(--ink-dark);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+      gap: 16px;
     }
 
-    .sheet-title-group {
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .sheet-title {
-      font-size: 21px;
-      font-weight: 600;
-      letter-spacing: -0.025em;
-      color: var(--ink-dark);
-    }
-    .sheet-subtitle {
-      font-size: 15px;
-      font-weight: 400;
-      color: var(--ink-muted);
-    }
-
-    /* Dual Metric Callout Row (Exact 15 ml / 7 g Balance) */
-    .dual-metrics {
-      width: 100%;
+    .metrics-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      padding: 4px 8px;
+      gap: 6px;
     }
-    .metric-cell {
+    .metric-btn {
+      background: transparent;
+      border: none;
+      border-radius: 14px;
+      padding: 6px 4px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
-      padding: 8px 6px;
-      border-radius: 16px;
+      gap: 3px;
       cursor: pointer;
-      transition: background 0.16s ease;
+      font-family: inherit;
+      transition: background 0.14s;
     }
-    .metric-cell:hover {
-      background: rgba(28, 28, 27, 0.045);
+    .metric-btn:hover {
+      background: rgba(28, 28, 27, 0.05);
     }
-    .metric-val-row {
+    .metric-val {
       display: inline-flex;
       align-items: flex-start;
       line-height: 1;
-    }
-    .metric-num {
-      font-size: 27px;
-      font-weight: 400;
-      letter-spacing: -0.03em;
-      font-variant-numeric: tabular-nums;
       color: var(--ink-dark);
     }
-    .metric-unit {
-      font-size: 11px;
+    .metric-val strong {
+      font-size: 25px;
       font-weight: 500;
-      color: var(--ink-muted);
-      margin-left: 3px;
-      margin-top: 3px;
+      letter-spacing: -0.03em;
+      font-variant-numeric: tabular-nums;
     }
-    .metric-label {
-      font-size: 12px;
-      font-weight: 400;
+    .metric-val sub, .metric-val sup {
+      font-size: 11px;
+      color: var(--ink-muted);
+      margin-left: 2px;
+      margin-top: 2px;
+    }
+    .metric-lbl {
+      font-size: 11.5px;
       color: var(--ink-muted);
     }
 
-    /* Bottom Action Pills ([ 4x   -   + ]  [ Generate ]) */
-    .action-pills-row {
-      width: 100%;
+    .cta-row {
       display: grid;
-      grid-template-columns: 1.18fr 1fr;
-      gap: 10px;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 8px;
       align-items: center;
     }
 
-    .stepper-pill {
-      height: 52px;
-      background: var(--chassis-dark);
+    .cand-pill {
+      height: 48px;
+      background: var(--dark-panel);
       border-radius: 9999px;
-      padding: 5px 10px 5px 5px;
+      padding: 4px 8px 4px 4px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 6px 16px rgba(28, 28, 27, 0.14);
     }
-    .stepper-badge {
-      width: 42px;
-      height: 42px;
+    .cand-badge {
+      width: 40px;
+      height: 40px;
       border-radius: 9999px;
-      background: #4C4B48;
+      background: var(--dark-thumb);
       color: var(--ink-light);
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
-      font-variant-numeric: tabular-nums;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
+      font-variant-numeric: tabular-nums;
     }
-    .stepper-controls {
+    .cand-steps {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 2px;
     }
-    .step-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 9999px;
+    .cand-btn {
+      width: 34px;
+      height: 34px;
       border: none;
+      border-radius: 9999px;
       background: transparent;
       color: var(--ink-light-muted);
-      font-size: 18px;
-      font-weight: 400;
+      font-size: 17px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      transition: color 0.15s ease, background 0.15s ease;
     }
-    .step-btn:hover {
+    .cand-btn:hover {
       color: var(--ink-light);
-      background: rgba(255, 255, 255, 0.07);
+      background: rgba(255, 255, 255, 0.08);
     }
 
-    .primary-cta-pill {
-      height: 52px;
+    .generate-pill {
+      height: 48px;
       border: none;
       border-radius: 9999px;
-      background: var(--chassis-dark);
+      background: var(--dark-panel);
       color: var(--ink-light);
       font-family: inherit;
-      font-size: 16px;
-      font-weight: 500;
+      font-size: 15px;
+      font-weight: 600;
       letter-spacing: -0.01em;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: 0 6px 16px rgba(28, 28, 27, 0.16);
-      transition: transform 0.14s ease, background 0.18s ease, opacity 0.18s ease;
+      transition: transform 0.12s ease, background 0.16s ease, opacity 0.16s ease;
     }
-    .primary-cta-pill:hover {
-      background: #2B2B29;
+    .generate-pill:hover {
+      background: #2C2C2A;
     }
-    .primary-cta-pill:active {
+    .generate-pill:active {
       transform: scale(0.975);
     }
-    .primary-cta-pill:disabled {
-      opacity: 0.72;
+    .generate-pill:disabled {
+      opacity: 0.65;
       cursor: wait;
     }
 
     /* ============================================================
-       RIGHT 3D VIEWPORT & CUPERTINO PILL INSPECTOR SHELL
-       Outer R = 40px, Padding P = 16px => Inner R = 24px
+       SAĞ TAM EKRAN 3D SAHNE (ÜZERİNDE HİÇBİR ETİKET / KALABALIK YOK)
+       Dış R = 30px, Padding P = 10px => Sahne R = 20px
        ============================================================ */
-    .viewport-shell {
-      background: var(--cream-card);
-      border-radius: 40px;
-      padding: 16px;
+    .viewport-card {
+      background: var(--stage-card);
+      border-radius: 30px;
+      padding: 10px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
-      box-shadow: var(--shadow-surface);
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      min-height: 760px;
+      gap: 10px;
+      box-shadow: var(--shadow-soft);
+      min-height: 0;
     }
 
-    .viewport-topbar {
+    .stage-toolbar {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      gap: 8px;
       padding: 2px 4px;
     }
 
-    /* Cupertino Pill Segmented Control */
-    .inspector-track {
+    .view-pills {
       display: inline-flex;
-      flex-wrap: wrap;
-      background: var(--cream-subtle);
-      padding: 4px;
+      background: var(--cream-track);
+      padding: 3px;
       border-radius: 9999px;
       gap: 2px;
     }
-    .inspector-pill {
+    .view-pill {
       border: none;
       background: transparent;
       color: var(--ink-muted);
       font-family: inherit;
       font-size: 12.5px;
       font-weight: 500;
-      padding: 8px 15px;
-      min-height: 36px;
+      padding: 7px 14px;
       border-radius: 9999px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.16s ease;
     }
-    .inspector-pill.active {
+    .view-pill.active {
       background: #FFFFFF;
       color: var(--ink-dark);
       font-weight: 600;
       box-shadow: var(--shadow-pill);
     }
 
-    .topbar-actions {
+    .stage-actions {
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    .secondary-pill-btn {
-      height: 44px;
-      padding: 0 18px;
+
+    .status-line {
+      font-size: 12px;
+      color: var(--ink-muted);
+      padding: 0 6px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .pill-btn-light {
+      height: 38px;
+      padding: 0 15px;
       border-radius: 9999px;
-      border: 1px solid var(--cream-border);
+      border: 1px solid var(--border-light);
       background: #FFFFFF;
       color: var(--ink-dark);
       font-family: inherit;
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 600;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-      transition: transform 0.12s ease, background 0.16s ease;
     }
-    .secondary-pill-btn:hover {
-      background: var(--cream-surface);
-    }
-    .secondary-pill-btn:active {
-      transform: scale(0.97);
+    .pill-btn-light:hover {
+      background: var(--cream-card);
     }
 
-    .download-pill-btn {
-      height: 44px;
-      padding: 0 20px;
+    .pill-btn-dark {
+      height: 38px;
+      padding: 0 18px;
       border-radius: 9999px;
       border: none;
-      background: var(--chassis-dark);
+      background: var(--dark-panel);
       color: var(--ink-light);
       font-family: inherit;
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 600;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: var(--shadow-pill);
-      transition: background 0.16s ease, transform 0.12s ease;
     }
-    .download-pill-btn:hover {
-      background: #2E2E2C;
-    }
-    .download-pill-btn:disabled {
-      opacity: 0.4;
+    .pill-btn-dark:disabled {
+      opacity: 0.35;
       cursor: not-allowed;
     }
 
-    /* Interactive 3D Stage Canvas (R = 24px nested) */
-    .canvas-frame {
-      position: relative;
+    /* Saf 3D Kanvas — Üzerinde sıfır yazı / rozet */
+    .stage-canvas-wrap {
       flex: 1;
-      border-radius: 24px;
-      background: radial-gradient(circle at 50% 42%, #2B2A28 0%, #1C1C1B 78%);
+      border-radius: 20px;
+      background: radial-gradient(circle at 50% 45%, #282725 0%, #191918 85%);
       overflow: hidden;
-      border: 1px solid rgba(28, 28, 27, 0.12);
-      min-height: 460px;
+      min-height: 0;
     }
 
     #viewport {
@@ -686,502 +528,158 @@
     #viewport:active {
       cursor: grabbing;
     }
-
-    .viewport-overlay-top {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      right: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      pointer-events: none;
-    }
-    .hud-pill {
-      pointer-events: auto;
-      background: rgba(28, 28, 27, 0.72);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: var(--ink-light);
-      font-size: 11.5px;
-      font-weight: 500;
-      padding: 6px 12px;
-      border-radius: 9999px;
-      font-variant-numeric: tabular-nums;
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-    }
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 9999px;
-      background: #D8D2C5;
-      box-shadow: 0 0 8px rgba(240, 237, 230, 0.65);
-    }
-    .status-dot.busy {
-      background: #E2B86B;
-      animation: pulse 1s infinite ease-in-out;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.45; transform: scale(0.8); }
-    }
-
-    .viewport-hint {
-      position: absolute;
-      bottom: 14px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 11px;
-      color: rgba(243, 240, 234, 0.5);
-      pointer-events: none;
-      letter-spacing: 0.02em;
-    }
-
-    /* Bottom Telemetry & Presets Card (R = 24px nested) */
-    .viewport-footer {
-      background: var(--cream-surface);
-      border-radius: 24px;
-      padding: 14px 18px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .preset-pills {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 6px;
-    }
-    .preset-chip {
-      border: 1px solid var(--cream-border);
-      background: #FFFFFF;
-      color: var(--ink-dark);
-      font-family: inherit;
-      font-size: 12px;
-      font-weight: 500;
-      padding: 7px 14px;
-      border-radius: 9999px;
-      cursor: pointer;
-      transition: all 0.16s ease;
-    }
-    .preset-chip:hover {
-      background: var(--chassis-dark);
-      color: var(--ink-light);
-      border-color: var(--chassis-dark);
-    }
-
-    .sla-strip {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      font-size: 12px;
-      font-variant-numeric: tabular-nums;
-      color: var(--ink-muted);
-    }
-    .sla-item strong {
-      color: var(--ink-dark);
-      font-weight: 600;
-    }
   </style>
 </head>
 <body>
-  <div class="studio-stage">
-    <!-- ============================================================
-         LEFT TACTILE DEVICE CONSOLE (Photo-Accurate Proportions)
-         ============================================================ -->
-    <section class="device-chassis" aria-label="Redis3D Pro Control Console">
-      <div class="dark-upper">
-        <!-- Top Header Bar -->
-        <header class="top-bar">
-          <div class="brand-left">
-            <button class="icon-circle-btn" id="resetViewBtn" title="Reset Camera & Parameters" aria-label="Reset View">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="15 18 9 12 15 6"></polyline>
-              </svg>
-            </button>
-            <span class="brand-title">Redis3D Pro Studio</span>
-          </div>
-
-          <div class="dark-seg-track" role="tablist" aria-label="Console Mode">
-            <button class="dark-seg-btn active" data-pane="dial" role="tab">Dial</button>
-            <button class="dark-seg-btn" data-pane="morph" role="tab">Morph</button>
-          </div>
-
-          <button class="pro-toggle" id="proToggle" data-pro="true" title="Toggle Pro Pipeline (Auto-Rig + Sym-Lock + Consilience)" aria-label="Pro Mode Toggle">
-            <span class="pro-thumb">Pro</span>
-          </button>
-        </header>
-
-        <!-- Dual Photo-Matched Centerpiece Instruments -->
-        <div class="instrument-stage">
-          <!-- Pane 1: 40-Tick Radial Gauge (Photo Left) -->
-          <div class="instrument-pane active" id="pane-dial">
-            <div class="dial-wrap" id="radialDial" title="Live NVML VRAM & Extraction Headroom">
-              <svg class="dial-svg" viewBox="0 0 248 248" id="dialSvg"></svg>
-              <div class="dial-center">
-                <div class="dial-value-row">
-                  <span class="dial-num" id="dialPct">12</span>
-                  <span class="dial-unit">%</span>
-                </div>
-                <div class="dial-sub" id="dialLabel">VRAM SLA</div>
-                <div class="dial-mb" id="vramText">-- MB / 2048 MB</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Pane 2: 4-Axis Organic Morph Blob Pad (Photo Right) -->
-          <div class="instrument-pane" id="pane-morph">
-            <div class="morph-wrap" id="morphPad">
-              <span class="axis-label axis-top">SMOOTH</span>
-              <span class="axis-label axis-bottom">SHARP</span>
-              <span class="axis-label axis-left">COARSE</span>
-              <span class="axis-label axis-right">DENSE</span>
-              <svg class="morph-svg" viewBox="-110 -110 220 220" id="morphSvg">
-                <defs>
-                  <radialGradient id="blobGrad" cx="44%" cy="52%" r="60%">
-                    <stop offset="0%" stop-color="#1E1D1C" />
-                    <stop offset="55%" stop-color="#4A3F3B" />
-                    <stop offset="100%" stop-color="#7D6C65" />
-                  </radialGradient>
-                  <filter id="nodeGlow" x="-50%" y="-50%" width="200%" height="200%">
-                    <feGaussianBlur stdDeviation="4" result="blur" />
-                    <feMerge>
-                      <feMergeNode in="blur" />
-                      <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                  </filter>
-                </defs>
-                <path id="blobPath" fill="url(#blobGrad)" stroke="#DEDAD2" stroke-width="1.6" />
-                <circle id="blobHalo" r="16" fill="rgba(240, 237, 230, 0.22)" />
-                <circle id="blobNode" r="8.5" fill="#F2EFE9" filter="url(#nodeGlow)" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <!-- Integrated Prompt & Photo Reference Bar -->
-        <div class="prompt-dock">
-          <div class="prompt-dock-head">
-            <span>3D Prompt</span>
-            <span id="patrReadout">PATR-2: 6 steps · SymLock ON</span>
-          </div>
-          <textarea class="prompt-input" id="prompt" rows="2" placeholder="Describe any 3D object or upload a reference image...">precision armored mech helmet with sharp beveled visor</textarea>
-          <div class="ref-row">
-            <label class="upload-pill" for="imageFile">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="3"></rect>
-                <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                <polyline points="21 15 16 10 5 21"></polyline>
-              </svg>
-              <span>Ref Photo</span>
-            </label>
-            <input type="file" id="imageFile" accept="image/*" hidden />
-            <span class="ref-status" id="refStatus">No photo attached</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Lower Warm Oat Cream Sheet (#EFECE6) -->
-      <div class="cream-sheet">
-        <div class="sheet-title-group">
-          <div class="sheet-title" id="assetTitle">Armored Mech Helmet</div>
-          <div class="sheet-subtitle" id="assetSubtitle">sm_120 · NVFP4 + BiDelta-SSA</div>
-        </div>
-
-        <!-- Dual Metrics (Photo: 15 ml Espresso | 7 g Coffee Grind) -->
-        <div class="dual-metrics">
-          <div class="metric-cell" id="quadsCell" title="Click to cycle Quad Retopology resolution">
-            <div class="metric-val-row">
-              <span class="metric-num" id="quadsVal">512</span>
-              <span class="metric-unit">q</span>
-            </div>
-            <span class="metric-label">Quad Retopo</span>
-          </div>
-
-          <div class="metric-cell" id="stepsCell" title="Click to cycle OT-MeanFlow NFE steps">
-            <div class="metric-val-row">
-              <span class="metric-num" id="stepsVal">1</span>
-              <span class="metric-unit">nfe</span>
-            </div>
-            <span class="metric-label">MeanFlow Step</span>
-          </div>
-        </div>
-
-        <!-- Bottom Action Pills (Photo: [ 1x  -  + ]  [ Brew ]) -->
-        <div class="action-pills-row">
-          <div class="stepper-pill" aria-label="Consilience Candidates">
-            <span class="stepper-badge" id="candBadge">4x</span>
-            <div class="stepper-controls">
-              <button class="step-btn" id="candMinus" aria-label="Decrease candidates">&minus;</button>
-              <button class="step-btn" id="candPlus" aria-label="Increase candidates">+</button>
-            </div>
-          </div>
-
-          <button class="primary-cta-pill" id="genBtn">
-            <span id="genBtnText">Generate</span>
+  <div class="studio">
+    <!-- SOL STÜDYO KONTROLÜ -->
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="brand-row">
+          <span class="brand-name">Redis3D</span>
+          <button class="pro-pill" id="proToggle" data-pro="true" title="Pro Kalite Modu">
+            <span class="pro-dot">Pro</span>
           </button>
         </div>
-      </div>
-    </section>
 
-    <!-- ============================================================
-         RIGHT 3D VIEWPORT & CUPERTINO PILL INSPECTOR
-         ============================================================ -->
-    <main class="viewport-shell" aria-label="3D Asset Viewport and Inspector">
-      <div class="viewport-topbar">
-        <div class="inspector-track" role="tablist" aria-label="Inspector Shading Modes">
-          <button class="inspector-pill active" data-mode="pbr" id="modePbr">PBR</button>
-          <button class="inspector-pill" data-mode="wire" id="modeWire">Wireframe</button>
-          <button class="inspector-pill" data-mode="uv" id="modeUv">UV Grid</button>
-          <button class="inspector-pill" data-mode="bone" id="modeBone">Skeleton</button>
-          <button class="inspector-pill" data-mode="print" id="modePrint">Print Heatmap</button>
+        <div class="mode-track" role="tablist">
+          <button class="mode-tab active" data-tab="text">Metinden 3D</button>
+          <button class="mode-tab" data-tab="image">Görselden 3D</button>
         </div>
 
-        <div class="topbar-actions">
-          <button class="secondary-pill-btn" id="spinBtn" title="Toggle auto turntable">
-            <span>Turntable</span>
-          </button>
-          <button class="download-pill-btn" id="downloadBtn" disabled>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="7 10 12 15 17 10"></polyline>
-              <line x1="12" y1="15" x2="12" y2="3"></line>
+        <div class="input-pane active" id="tab-text">
+          <textarea class="prompt-box" id="prompt" placeholder="Üretmek istediğiniz 3D nesneyi yazın...">keskin hatlı zırhlı robot kaskı</textarea>
+        </div>
+
+        <div class="input-pane" id="tab-image">
+          <div class="drop-zone" id="dropZone">
+            <img id="previewImg" alt="Referans Görsel" />
+            <button class="clear-img-btn" id="clearImgBtn" type="button">&times;</button>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="4"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
             </svg>
-            <span>Download .GLB</span>
+            <span style="font-size:13px;font-weight:500;">Fotoğraf Seç veya Sürükle</span>
+            <span style="font-size:11px;opacity:0.6;">PNG, JPG, WEBP</span>
+            <input type="file" id="imageFile" accept="image/*" hidden />
+          </div>
+        </div>
+
+        <div class="rig-row">
+          <span>Otomatik İskelet (Rig)</span>
+          <button class="mini-switch" id="rigSwitch" data-on="true" aria-label="Otomatik İskelet">
+            <span></span>
           </button>
         </div>
       </div>
 
-      <div class="canvas-frame">
-        <canvas id="viewport"></canvas>
-        <div class="viewport-overlay-top">
-          <div class="hud-pill">
-            <span class="status-dot" id="statusDot"></span>
-            <span id="status">Ready · Local RTX 5060 (sm_120)</span>
-          </div>
-          <div class="hud-pill" id="meshStatsPill">
-            42 verts · 80 tris · Manifold
-          </div>
+      <!-- ALT KREM AKSİYON KARTI -->
+      <div class="cream-card">
+        <div class="metrics-row">
+          <button class="metric-btn" id="quadsBtn" type="button">
+            <span class="metric-val"><strong id="quadsVal">512</strong><sup>q</sup></span>
+            <span class="metric-lbl">Poligon</span>
+          </button>
+          <button class="metric-btn" id="stepsBtn" type="button">
+            <span class="metric-val"><strong id="stepsVal">1</strong><sup>x</sup></span>
+            <span class="metric-lbl">Adım Hızı</span>
+          </button>
         </div>
-        <div class="viewport-hint">Drag to orbit · Scroll to zoom · Click metrics below cream card to tune</div>
+
+        <div class="cta-row">
+          <div class="cand-pill" title="Aday Sayısı">
+            <span class="cand-badge" id="candBadge">4x</span>
+            <div class="cand-steps">
+              <button class="cand-btn" id="candMinus" type="button">&minus;</button>
+              <button class="cand-btn" id="candPlus" type="button">+</button>
+            </div>
+          </div>
+          <button class="generate-pill" id="genBtn" type="button">Oluştur</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- SAĞ SAF 3D SAHNE -->
+    <main class="viewport-card">
+      <div class="stage-toolbar">
+        <div class="view-pills">
+          <button class="view-pill active" data-mode="pbr" id="modePbr">Doku</button>
+          <button class="view-pill" data-mode="wire" id="modeWire">Tel Kafes</button>
+          <button class="view-pill" data-mode="uv" id="modeUv">UV</button>
+          <button class="view-pill" data-mode="bone" id="modeBone">İskelet</button>
+          <button class="view-pill" data-mode="print" id="modePrint">3D Baskı</button>
+        </div>
+
+        <div class="stage-actions">
+          <span class="status-line" id="status">Hazır</span>
+          <button class="pill-btn-light" id="spinBtn" type="button">Döndür</button>
+          <button class="pill-btn-dark" id="downloadBtn" type="button" disabled>İndir (.GLB)</button>
+        </div>
       </div>
 
-      <footer class="viewport-footer">
-        <div class="preset-pills" aria-label="Quick Studio Presets">
-          <button class="preset-chip" data-title="Armored Mech Helmet" data-prompt="precision armored mech helmet with sharp beveled visor">Mech Helmet</button>
-          <button class="preset-chip" data-title="Titanium Spur Gear" data-prompt="cnc machined titanium industrial spur gear with keyway bore">Titanium Gear</button>
-          <button class="preset-chip" data-title="Nordic Ceramic Vase" data-prompt="minimalist matte stoneware vase with subtle spiral fluting">Ceramic Vase</button>
-          <button class="preset-chip" data-title="Hard-Surface Drone" data-prompt="compact carbon fiber quadrotor airframe with chamfered arms">Carbon Drone</button>
-        </div>
-
-        <div class="sla-strip">
-          <span class="sla-item">Latency: <strong id="slaLatency">-- ms</strong></span>
-          <span class="sla-item">Peak VRAM: <strong id="slaVram">-- MB</strong></span>
-          <span class="sla-item">Spill: <strong id="slaSpill">0.0 MB</strong></span>
-        </div>
-      </footer>
+      <div class="stage-canvas-wrap">
+        <canvas id="viewport"></canvas>
+      </div>
     </main>
   </div>
 
   <script>
-    /* ==============================================================
-       STATE & CONFIG
-       ============================================================== */
     const state = {
       candidates: 4,
       nfeSteps: 1,
       retopoQuads: 512,
-      patrSteps: 6,
+      autoRig: true,
       proMode: true,
-      symLock: true,
-      morphX: 0.45, // -1..1 (COARSE -> DENSE)
-      morphY: -0.45, // -1..1 (SMOOTH -> SHARP)
       imageB64: null,
       inspectorMode: "pbr",
       turntable: true,
-      vramPct: 12,
       lastGlbBlob: null,
       mesh: null,
       rotY: 0.55,
-      rotX: 0.32,
+      rotX: 0.30,
       zoom: 1.85,
       dragging: false,
-      lastPointer: { x: 0, y: 0 },
+      lastPt: { x: 0, y: 0 },
     };
 
-    const QUADS_OPTIONS = [256, 512, 1024, 2048];
-    const NFE_OPTIONS = [1, 2, 4];
+    const QUADS = [256, 512, 1024, 2048];
+    const STEPS = [1, 2, 4];
 
-    /* ==============================================================
-       1. PRECISION 40-TICK RADIAL GAUGE (Photo Left)
-       ============================================================== */
-    const dialSvg = document.getElementById("dialSvg");
-    const TOTAL_TICKS = 40;
-    const tickEls = [];
-
-    (function buildRadialDial() {
-      const cx = 124, cy = 124, rOuter = 112;
-      for (let i = 0; i < TOTAL_TICKS; i++) {
-        // Start from bottom-right clockwise so active arc sits like photo
-        const angleDeg = 135 + (i / TOTAL_TICKS) * 360;
-        const rad = (angleDeg * Math.PI) / 180;
-        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        line.setAttribute("stroke-linecap", "round");
-        line.dataset.rad = String(rad);
-        line.dataset.cx = String(cx);
-        line.dataset.cy = String(cy);
-        line.dataset.rOuter = String(rOuter);
-        dialSvg.appendChild(line);
-        tickEls.push(line);
-      }
-      renderRadialDial(state.vramPct);
-    })();
-
-    function renderRadialDial(pct) {
-      const clamped = Math.max(0, Math.min(100, pct));
-      const activeCount = Math.max(1, Math.round((clamped / 100) * TOTAL_TICKS));
-      // Place active fan centered at ~145 deg (lower right, just like photo!)
-      const fanStart = 0;
-      for (let i = 0; i < TOTAL_TICKS; i++) {
-        const line = tickEls[i];
-        const rad = Number(line.dataset.rad);
-        const cx = Number(line.dataset.cx);
-        const cy = Number(line.dataset.cy);
-        const rOuter = Number(line.dataset.rOuter);
-        const distFromEnd = activeCount - 1 - i;
-        const isActive = i >= fanStart && i < fanStart + activeCount;
-
-        let len = 14;
-        let width = 1.4;
-        let color = "rgba(243, 240, 234, 0.22)";
-
-        if (isActive) {
-          const boost = Math.max(0, 1 - distFromEnd / Math.max(4, activeCount * 0.65));
-          len = 15 + boost * 13;
-          width = 1.8 + boost * 1.4;
-          const alpha = 0.45 + boost * 0.55;
-          color = `rgba(243, 240, 234, ${alpha.toFixed(2)})`;
-        }
-
-        const rInner = rOuter - len;
-        line.setAttribute("x1", (cx + rInner * Math.cos(rad)).toFixed(2));
-        line.setAttribute("y1", (cy + rInner * Math.sin(rad)).toFixed(2));
-        line.setAttribute("x2", (cx + rOuter * Math.cos(rad)).toFixed(2));
-        line.setAttribute("y2", (cy + rOuter * Math.sin(rad)).toFixed(2));
-        line.setAttribute("stroke", color);
-        line.setAttribute("stroke-width", width.toFixed(2));
-      }
-      document.getElementById("dialPct").textContent = Math.round(clamped);
-    }
-
-    /* ==============================================================
-       2. ORGANIC MORPH BLOB PAD (Photo Right)
-       ============================================================== */
-    const morphSvg = document.getElementById("morphSvg");
-    const blobPath = document.getElementById("blobPath");
-    const blobNode = document.getElementById("blobNode");
-    const blobHalo = document.getElementById("blobHalo");
-
-    function updateOrganicBlob() {
-      const nx = state.morphX * 56;
-      const ny = state.morphY * 56;
-      blobNode.setAttribute("cx", nx.toFixed(1));
-      blobNode.setAttribute("cy", ny.toFixed(1));
-      blobHalo.setAttribute("cx", nx.toFixed(1));
-      blobHalo.setAttribute("cy", ny.toFixed(1));
-
-      // Smooth organic closed Bezier loop pulled smoothly toward handle (nx, ny)
-      const pts = [];
-      const N = 8;
-      for (let i = 0; i < N; i++) {
-        const a = (i / N) * Math.PI * 2;
-        const dx = Math.cos(a);
-        const dy = Math.sin(a);
-        const pull = Math.max(0, dx * state.morphX + dy * state.morphY);
-        const r = 64 + pull * 26 + 7 * Math.sin(a * 2 + state.morphX);
-        pts.push([r * dx, r * dy]);
-      }
-
-      let d = "";
-      for (let i = 0; i < N; i++) {
-        const p0 = pts[(i - 1 + N) % N];
-        const p1 = pts[i];
-        const p2 = pts[(i + 1) % N];
-        const p3 = pts[(i + 2) % N];
-        if (i === 0) d += `M ${p1[0].toFixed(1)} ${p1[1].toFixed(1)} `;
-        const c1x = p1[0] + (p2[0] - p0[0]) / 6;
-        const c1y = p1[1] + (p2[1] - p0[1]) / 6;
-        const c2x = p2[0] - (p3[0] - p1[0]) / 6;
-        const c2y = p2[1] - (p3[1] - p1[1]) / 6;
-        d += `C ${c1x.toFixed(1)} ${c1y.toFixed(1)}, ${c2x.toFixed(1)} ${c2y.toFixed(1)}, ${p2[0].toFixed(1)} ${p2[1].toFixed(1)} `;
-      }
-      blobPath.setAttribute("d", d + "Z");
-
-      state.patrSteps = Math.max(2, Math.min(12, Math.round(6 + state.morphX * 4 - state.morphY * 2)));
-      document.getElementById("patrReadout").textContent =
-        `PATR-2: ${state.patrSteps} steps · SymLock ${state.symLock ? "ON" : "OFF"}`;
-    }
-
-    let morphDragging = false;
-    function setMorphFromEvent(ev) {
-      const rect = morphSvg.getBoundingClientRect();
-      const x = ((ev.clientX - rect.left) / rect.width) * 2 - 1;
-      const y = ((ev.clientY - rect.top) / rect.height) * 2 - 1;
-      const mag = Math.hypot(x, y);
-      const scale = mag > 0.85 ? 0.85 / mag : 1;
-      state.morphX = x * scale;
-      state.morphY = y * scale;
-      updateOrganicBlob();
-    }
-    morphSvg.addEventListener("pointerdown", (e) => {
-      morphDragging = true;
-      morphSvg.setPointerCapture(e.pointerId);
-      setMorphFromEvent(e);
-    });
-    morphSvg.addEventListener("pointermove", (e) => {
-      if (morphDragging) setMorphFromEvent(e);
-    });
-    morphSvg.addEventListener("pointerup", () => { morphDragging = false; });
-    updateOrganicBlob();
-
-    /* ==============================================================
-       3. UI INTERACTIONS & WEBSOCKET TELEMETRY
-       ============================================================== */
-    document.querySelectorAll(".dark-seg-btn").forEach((btn) => {
-      btn.onclick = () => {
-        document.querySelectorAll(".dark-seg-btn").forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        const target = btn.dataset.pane;
-        document.querySelectorAll(".instrument-pane").forEach((p) => p.classList.remove("active"));
-        document.getElementById(`pane-${target}`).classList.add("active");
+    // Sekme geçişi (Metinden 3D / Görselden 3D)
+    document.querySelectorAll(".mode-tab").forEach((tab) => {
+      tab.onclick = () => {
+        document.querySelectorAll(".mode-tab").forEach((t) => t.classList.remove("active"));
+        tab.classList.add("active");
+        document.querySelectorAll(".input-pane").forEach((p) => p.classList.remove("active"));
+        document.getElementById(`tab-${tab.dataset.tab}`).classList.add("active");
       };
     });
 
+    // Pro & Oto İskelet anahtarları
     const proToggle = document.getElementById("proToggle");
     proToggle.onclick = () => {
       state.proMode = !state.proMode;
-      state.symLock = state.proMode;
       proToggle.dataset.pro = String(state.proMode);
-      updateOrganicBlob();
     };
 
-    document.getElementById("quadsCell").onclick = () => {
-      const idx = (QUADS_OPTIONS.indexOf(state.retopoQuads) + 1) % QUADS_OPTIONS.length;
-      state.retopoQuads = QUADS_OPTIONS[idx];
+    const rigSwitch = document.getElementById("rigSwitch");
+    rigSwitch.onclick = () => {
+      state.autoRig = !state.autoRig;
+      rigSwitch.dataset.on = String(state.autoRig);
+    };
+
+    // Metrikler
+    document.getElementById("quadsBtn").onclick = () => {
+      state.retopoQuads = QUADS[(QUADS.indexOf(state.retopoQuads) + 1) % QUADS.length];
       document.getElementById("quadsVal").textContent = state.retopoQuads;
     };
-
-    document.getElementById("stepsCell").onclick = () => {
-      const idx = (NFE_OPTIONS.indexOf(state.nfeSteps) + 1) % NFE_OPTIONS.length;
-      state.nfeSteps = NFE_OPTIONS[idx];
+    document.getElementById("stepsBtn").onclick = () => {
+      state.nfeSteps = STEPS[(STEPS.indexOf(state.nfeSteps) + 1) % STEPS.length];
       document.getElementById("stepsVal").textContent = state.nfeSteps;
     };
 
+    // Aday sayacı
     document.getElementById("candMinus").onclick = () => {
       state.candidates = Math.max(1, state.candidates - 1);
       document.getElementById("candBadge").textContent = `${state.candidates}x`;
@@ -1191,104 +689,88 @@
       document.getElementById("candBadge").textContent = `${state.candidates}x`;
     };
 
-    document.querySelectorAll(".inspector-pill").forEach((btn) => {
+    // Görünüm modları
+    document.querySelectorAll(".view-pill").forEach((btn) => {
       btn.onclick = () => {
-        document.querySelectorAll(".inspector-pill").forEach((b) => b.classList.remove("active"));
+        document.querySelectorAll(".view-pill").forEach((b) => b.classList.remove("active"));
         btn.classList.add("active");
         state.inspectorMode = btn.dataset.mode;
       };
     });
 
-    document.querySelectorAll(".preset-chip").forEach((chip) => {
-      chip.onclick = () => {
-        document.getElementById("assetTitle").textContent = chip.dataset.title;
-        document.getElementById("prompt").value = chip.dataset.prompt;
-      };
-    });
-
     document.getElementById("spinBtn").onclick = () => {
       state.turntable = !state.turntable;
-      document.getElementById("spinBtn").style.opacity = state.turntable ? "1" : "0.6";
+      document.getElementById("spinBtn").style.opacity = state.turntable ? "1" : "0.55";
     };
 
-    document.getElementById("resetViewBtn").onclick = () => {
-      state.rotY = 0.55;
-      state.rotX = 0.32;
-      state.zoom = 1.85;
-    };
+    // Fotoğraf yükleme
+    const dropZone = document.getElementById("dropZone");
+    const imageFile = document.getElementById("imageFile");
+    const previewImg = document.getElementById("previewImg");
 
-    document.getElementById("imageFile").onchange = (e) => {
-      const file = e.target.files?.[0];
+    function loadImgFile(file) {
       if (!file) return;
       const reader = new FileReader();
       reader.onload = () => {
         const res = String(reader.result || "");
         state.imageB64 = res.includes(",") ? res.split(",")[1] : res;
-        document.getElementById("refStatus").textContent = file.name;
+        previewImg.src = res;
+        dropZone.classList.add("has-image");
       };
       reader.readAsDataURL(file);
+    }
+
+    dropZone.onclick = (e) => {
+      if (e.target.id === "clearImgBtn") return;
+      imageFile.click();
+    };
+    imageFile.onchange = (e) => loadImgFile(e.target.files?.[0]);
+    dropZone.ondragover = (e) => e.preventDefault();
+    dropZone.ondrop = (e) => {
+      e.preventDefault();
+      loadImgFile(e.dataTransfer?.files?.[0]);
+    };
+    document.getElementById("clearImgBtn").onclick = (e) => {
+      e.stopPropagation();
+      state.imageB64 = null;
+      previewImg.src = "";
+      imageFile.value = "";
+      dropZone.classList.remove("has-image");
     };
 
-    // Live NVML WebSocket Telemetry
-    const wsProto = location.protocol === "https:" ? "wss:" : "ws:";
-    try {
-      const ws = new WebSocket(`${wsProto}//${location.host}/ws/telemetry`);
-      ws.onmessage = (ev) => {
-        const d = JSON.parse(ev.data);
-        const pct = Math.min(100, (d.vram_mb / 2048) * 100);
-        state.vramPct = pct;
-        renderRadialDial(pct);
-        document.getElementById("vramText").textContent = `${d.vram_mb.toFixed(0)} MB / 2048 MB`;
-        document.getElementById("slaSpill").textContent = `${(d.shared_spill_mb || 0).toFixed(1)} MB`;
-      };
-    } catch (_) {}
-
-    /* ==============================================================
-       4. BINARY GLB PARSER & ZERO-DEPENDENCY 3D SOFTWARE/2D RENDERER
-       ============================================================== */
+    // GLB Çözücü
     function parseGlbBuffer(buffer) {
       const view = new DataView(buffer);
-      const magic = view.getUint32(0, true);
-      if (magic !== 0x46546C67) return null;
-
+      if (view.getUint32(0, true) !== 0x46546C67) return null;
       const jsonLen = view.getUint32(12, true);
-      const jsonStr = new TextDecoder().decode(new Uint8Array(buffer, 20, jsonLen));
-      const gltf = JSON.parse(jsonStr);
-
-      const binStart = 20 + jsonLen;
-      const binLen = view.getUint32(binStart, true);
-      const binOffset = binStart + 8;
-
+      const gltf = JSON.parse(new TextDecoder().decode(new Uint8Array(buffer, 20, jsonLen)));
+      const binOffset = 20 + jsonLen + 8;
       const prim = gltf.meshes?.[0]?.primitives?.[0];
       if (!prim) return null;
 
-      function readAccessor(accIdx) {
-        const acc = gltf.accessors[accIdx];
+      function readAcc(idx) {
+        const acc = gltf.accessors[idx];
         const bv = gltf.bufferViews[acc.bufferView];
-        const offset = binOffset + (bv.byteOffset || 0) + (acc.byteOffset || 0);
-        const compCount = acc.type === "VEC3" ? 3 : acc.type === "VEC2" ? 2 : acc.type === "VEC4" ? 4 : 1;
-        const count = acc.count * compCount;
-        if (acc.componentType === 5126) return new Float32Array(buffer, offset, count);
-        if (acc.componentType === 5125) return new Uint32Array(buffer, offset, count);
-        if (acc.componentType === 5123) return new Uint16Array(buffer, offset, count);
+        const off = binOffset + (bv.byteOffset || 0) + (acc.byteOffset || 0);
+        const k = acc.type === "VEC3" ? 3 : acc.type === "VEC2" ? 2 : acc.type === "VEC4" ? 4 : 1;
+        const n = acc.count * k;
+        if (acc.componentType === 5126) return new Float32Array(buffer, off, n);
+        if (acc.componentType === 5125) return new Uint32Array(buffer, off, n);
+        if (acc.componentType === 5123) return new Uint16Array(buffer, off, n);
         return null;
       }
 
-      const pos = readAccessor(prim.attributes.POSITION);
-      const norm = prim.attributes.NORMAL !== undefined ? readAccessor(prim.attributes.NORMAL) : null;
-      const idx = prim.indices !== undefined ? readAccessor(prim.indices) : null;
-
-      // Normalize to centered unit sphere
-      let cx = 0, cy = 0, cz = 0;
+      const pos = readAcc(prim.attributes.POSITION);
+      const idx = prim.indices !== undefined ? readAcc(prim.indices) : null;
       const nVerts = pos.length / 3;
+      let cx = 0, cy = 0, cz = 0;
       for (let i = 0; i < nVerts; i++) {
         cx += pos[i * 3]; cy += pos[i * 3 + 1]; cz += pos[i * 3 + 2];
       }
       cx /= Math.max(1, nVerts); cy /= Math.max(1, nVerts); cz /= Math.max(1, nVerts);
       let maxR = 1e-5;
       for (let i = 0; i < nVerts; i++) {
-        const dx = pos[i * 3] - cx, dy = pos[i * 3 + 1] - cy, dz = pos[i * 3 + 2] - cz;
-        maxR = Math.max(maxR, Math.hypot(dx, dy, dz));
+        maxR = Math.max(maxR, Math.hypot(pos[i * 3] - cx, pos[i * 3 + 1] - cy, pos[i * 3 + 2] - cz));
       }
       const normPos = new Float32Array(pos.length);
       for (let i = 0; i < nVerts; i++) {
@@ -1296,48 +778,36 @@
         normPos[i * 3 + 1] = (pos[i * 3 + 1] - cy) / maxR;
         normPos[i * 3 + 2] = (pos[i * 3 + 2] - cz) / maxR;
       }
-
       const faces = [];
       if (idx) {
-        for (let i = 0; i < idx.length; i += 3) {
-          faces.push([idx[i], idx[i + 1], idx[i + 2]]);
-        }
+        for (let i = 0; i < idx.length; i += 3) faces.push([idx[i], idx[i + 1], idx[i + 2]]);
       } else {
         for (let i = 0; i < nVerts; i += 3) faces.push([i, i + 1, i + 2]);
       }
-
-      return { pos: normPos, norm, faces, vertsCount: nVerts, trisCount: faces.length };
+      return { pos: normPos, faces, vertsCount: nVerts };
     }
 
-    function createInitialProxyMesh() {
+    function buildStarterMesh() {
       const phi = (1 + Math.sqrt(5)) / 2;
       const rawV = [
         [-1, phi, 0], [1, phi, 0], [-1, -phi, 0], [1, -phi, 0],
         [0, -1, phi], [0, 1, phi], [0, -1, -phi], [0, 1, -phi],
         [phi, 0, -1], [phi, 0, 1], [-phi, 0, -1], [-phi, 0, 1],
-      ].map((v) => {
-        const l = Math.hypot(...v);
-        return [v[0] / l, v[1] / l, v[2] / l];
-      });
+      ].map((v) => { const l = Math.hypot(...v); return [v[0] / l, v[1] / l, v[2] / l]; });
       const rawF = [
         [0,11,5],[0,5,1],[0,1,7],[0,7,10],[0,10,11],
         [1,5,9],[5,11,4],[11,10,2],[10,7,6],[7,1,8],
         [3,9,4],[3,4,2],[3,2,6],[3,6,8],[3,8,9],
         [4,9,5],[2,4,11],[6,2,10],[8,6,7],[9,8,1],
       ];
-      // 1x subdivision for smooth organic sphere-helm silhouette
       const cache = new Map();
       const mid = (a, b) => {
         const k = a < b ? `${a}_${b}` : `${b}_${a}`;
         if (cache.has(k)) return cache.get(k);
-        const m = [
-          0.5 * (rawV[a][0] + rawV[b][0]),
-          0.5 * (rawV[a][1] + rawV[b][1]),
-          0.5 * (rawV[a][2] + rawV[b][2]),
-        ];
+        const m = [0.5*(rawV[a][0]+rawV[b][0]), 0.5*(rawV[a][1]+rawV[b][1]), 0.5*(rawV[a][2]+rawV[b][2])];
         const l = Math.hypot(...m);
         const idx = rawV.length;
-        rawV.push([(m[0] / l) * (0.94 + 0.08 * Math.cos(m[1] * 4)), m[1] / l, (m[2] / l) * 0.96]);
+        rawV.push([m[0] / l, m[1] / l, m[2] / l]);
         cache.set(k, idx);
         return idx;
       };
@@ -1346,35 +816,33 @@
         const ab = mid(a, b), bc = mid(b, c), ca = mid(c, a);
         faces.push([a, ab, ca], [b, bc, ab], [c, ca, bc], [ab, bc, ca]);
       }
-      const pos = new Float32Array(rawV.flat());
-      return { pos, norm: null, faces, vertsCount: rawV.length, trisCount: faces.length };
+      return { pos: new Float32Array(rawV.flat()), faces, vertsCount: rawV.length };
     }
 
-    state.mesh = createInitialProxyMesh();
+    state.mesh = buildStarterMesh();
 
+    // 3D Çizim Döngüsü
     const canvas = document.getElementById("viewport");
     const ctx = canvas.getContext("2d");
 
-    function resizeCanvas() {
+    function resize() {
       const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.parentElement.getBoundingClientRect();
-      canvas.width = Math.max(1, Math.floor(rect.width * dpr));
-      canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+      const r = canvas.parentElement.getBoundingClientRect();
+      canvas.width = Math.max(1, Math.floor(r.width * dpr));
+      canvas.height = Math.max(1, Math.floor(r.height * dpr));
     }
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
+    window.addEventListener("resize", resize);
+    resize();
 
     canvas.addEventListener("pointerdown", (e) => {
       state.dragging = true;
-      state.lastPointer = { x: e.clientX, y: e.clientY };
+      state.lastPt = { x: e.clientX, y: e.clientY };
     });
     window.addEventListener("pointermove", (e) => {
       if (!state.dragging) return;
-      const dx = e.clientX - state.lastPointer.x;
-      const dy = e.clientY - state.lastPointer.y;
-      state.lastPointer = { x: e.clientX, y: e.clientY };
-      state.rotY += dx * 0.008;
-      state.rotX = Math.max(-1.4, Math.min(1.4, state.rotX + dy * 0.008));
+      state.rotY += (e.clientX - state.lastPt.x) * 0.008;
+      state.rotX = Math.max(-1.4, Math.min(1.4, state.rotX + (e.clientY - state.lastPt.y) * 0.008));
+      state.lastPt = { x: e.clientX, y: e.clientY };
     });
     window.addEventListener("pointerup", () => { state.dragging = false; });
     canvas.addEventListener("wheel", (e) => {
@@ -1382,73 +850,60 @@
       state.zoom = Math.max(1.15, Math.min(4.2, state.zoom + e.deltaY * 0.0014));
     }, { passive: false });
 
-    function drawFrame() {
-      requestAnimationFrame(drawFrame);
-      if (state.turntable && !state.dragging) state.rotY += 0.0045;
+    function renderLoop() {
+      requestAnimationFrame(renderLoop);
+      if (state.turntable && !state.dragging) state.rotY += 0.004;
 
       const w = canvas.width, h = canvas.height;
       ctx.clearRect(0, 0, w, h);
 
-      // Subtle architectural floor grid
       const cx = w * 0.5, cy = h * 0.5;
       const scale = Math.min(w, h) * 0.34 * state.zoom;
       const cosY = Math.cos(state.rotY), sinY = Math.sin(state.rotY);
       const cosX = Math.cos(state.rotX), sinX = Math.sin(state.rotX);
 
-      function project(x, y, z) {
+      function proj(x, y, z) {
         const x1 = x * cosY - z * sinY;
         const z1 = x * sinY + z * cosY;
         const y2 = y * cosX - z1 * sinX;
         const z2 = y * sinX + z1 * cosX;
-        const persp = 3.2 / (3.2 - z2);
-        return [cx + x1 * scale * persp, cy - y2 * scale * persp, z2, x1, y2];
+        const p = 3.2 / (3.2 - z2);
+        return [cx + x1 * scale * p, cy - y2 * scale * p, z2, x1, y2];
       }
 
-      // Draw subtle turntable ring on ground
-      ctx.save();
-      ctx.strokeStyle = "rgba(239, 236, 230, 0.09)";
+      // Sade döner tabla halkası
+      ctx.strokeStyle = "rgba(239, 236, 230, 0.08)";
       ctx.lineWidth = 1;
       ctx.beginPath();
       for (let i = 0; i <= 48; i++) {
         const a = (i / 48) * Math.PI * 2;
-        const [px, py] = project(Math.cos(a) * 1.25, -1.05, Math.sin(a) * 1.25);
+        const [px, py] = proj(Math.cos(a) * 1.25, -1.05, Math.sin(a) * 1.25);
         if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
       }
       ctx.stroke();
-      ctx.restore();
 
       const mesh = state.mesh;
       if (!mesh) return;
-      const { pos, faces } = mesh;
-
-      const projVerts = new Array(mesh.vertsCount);
+      const pv = new Array(mesh.vertsCount);
       for (let i = 0; i < mesh.vertsCount; i++) {
-        projVerts[i] = project(pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2]);
+        pv[i] = proj(mesh.pos[i * 3], mesh.pos[i * 3 + 1], mesh.pos[i * 3 + 2]);
       }
 
-      // Painter's depth sort
-      const sorted = [];
-      for (let i = 0; i < faces.length; i++) {
-        const [ia, ib, ic] = faces[i];
-        const a = projVerts[ia], b = projVerts[ib], c = projVerts[ic];
+      const tris = [];
+      for (let i = 0; i < mesh.faces.length; i++) {
+        const [ia, ib, ic] = mesh.faces[i];
+        const a = pv[ia], b = pv[ib], c = pv[ic];
         const ux = b[3] - a[3], uy = b[4] - a[4], uz = b[2] - a[2];
         const vx = c[3] - a[3], vy = c[4] - a[4], vz = c[2] - a[2];
-        const nx = uy * vz - uz * vy;
-        const ny = uz * vx - ux * vz;
-        const nz = ux * vy - uy * vx;
+        const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
         if (nz <= 0 && state.inspectorMode !== "wire") continue;
-        const nLen = Math.hypot(nx, ny, nz) || 1;
-        sorted.push({
-          a, b, c,
-          z: (a[2] + b[2] + c[2]) / 3,
-          nx: nx / nLen, ny: ny / nLen, nz: nz / nLen,
-          idx: i,
-        });
+        const nl = Math.hypot(nx, ny, nz) || 1;
+        tris.push({ a, b, c, z: (a[2] + b[2] + c[2]) / 3, nx: nx / nl, ny: ny / nl, nz: nz / nl });
       }
-      sorted.sort((u, v) => u.z - v.z);
+      tris.sort((u, v) => u.z - v.z);
 
-      for (const f of sorted) {
-        const ndotl = Math.max(0.14, f.nx * -0.45 + f.ny * 0.62 + f.nz * 0.65);
+      for (const f of tris) {
+        const ndotl = Math.max(0.16, f.nx * -0.45 + f.ny * 0.62 + f.nz * 0.65);
         ctx.beginPath();
         ctx.moveTo(f.a[0], f.a[1]);
         ctx.lineTo(f.b[0], f.b[1]);
@@ -1456,49 +911,35 @@
         ctx.closePath();
 
         if (state.inspectorMode === "pbr") {
-          const lum = Math.round(62 + ndotl * 155);
+          const lum = Math.round(64 + ndotl * 156);
           ctx.fillStyle = `rgb(${lum}, ${Math.round(lum * 0.97)}, ${Math.round(lum * 0.92)})`;
           ctx.fill();
-          ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
-          ctx.lineWidth = 0.6;
-          ctx.stroke();
         } else if (state.inspectorMode === "wire") {
-          ctx.fillStyle = "rgba(239, 236, 230, 0.03)";
-          ctx.fill();
-          ctx.strokeStyle = "rgba(239, 236, 230, 0.58)";
+          ctx.strokeStyle = "rgba(239, 236, 230, 0.55)";
           ctx.lineWidth = 1;
           ctx.stroke();
         } else if (state.inspectorMode === "uv") {
-          const checker = (Math.floor((f.a[3] + 1) * 4) + Math.floor((f.a[4] + 1) * 4)) % 2 === 0;
-          const base = checker ? 210 : 95;
+          const chk = (Math.floor((f.a[3] + 1) * 4) + Math.floor((f.a[4] + 1) * 4)) % 2 === 0;
+          const base = chk ? 210 : 95;
           ctx.fillStyle = `rgb(${Math.round(base * ndotl)}, ${Math.round((base - 12) * ndotl)}, ${Math.round((base - 24) * ndotl)})`;
           ctx.fill();
         } else if (state.inspectorMode === "bone") {
-          ctx.fillStyle = `rgba(220, 214, 204, ${(0.22 * ndotl).toFixed(2)})`;
+          ctx.fillStyle = `rgba(220, 214, 204, ${(0.2 * ndotl).toFixed(2)})`;
           ctx.fill();
-          ctx.strokeStyle = "rgba(240, 236, 228, 0.14)";
-          ctx.stroke();
         } else if (state.inspectorMode === "print") {
-          // Overhang heatmap: upward-facing warm cream, steep overhangs warm terracotta
-          const slope = Math.max(0, 1 - Math.abs(f.ny));
-          const r = Math.round(145 + slope * 88);
-          const g = Math.round(188 - slope * 82);
-          const b = Math.round(148 - slope * 78);
-          ctx.fillStyle = `rgb(${Math.round(r * ndotl)}, ${Math.round(g * ndotl)}, ${Math.round(b * ndotl)})`;
+          const s = Math.max(0, 1 - Math.abs(f.ny));
+          ctx.fillStyle = `rgb(${Math.round((145 + s * 88) * ndotl)}, ${Math.round((188 - s * 82) * ndotl)}, ${Math.round((148 - s * 78) * ndotl)})`;
           ctx.fill();
         }
       }
 
-      // Draw LBS Skeleton Overlay in "bone" mode
       if (state.inspectorMode === "bone") {
-        const joints = [
-          [0, -0.75, 0], [0, -0.15, 0], [0, 0.45, 0], [0, 0.85, 0],
-          [-0.45, 0.35, 0], [0.45, 0.35, 0],
-        ].map(([x, y, z]) => project(x, y, z));
-        const edges = [[0,1],[1,2],[2,3],[2,4],[2,5]];
+        const joints = [[0,-0.75,0],[0,-0.15,0],[0,0.45,0],[0,0.85,0],[-0.45,0.35,0],[0.45,0.35,0]].map(
+          ([x, y, z]) => proj(x, y, z)
+        );
         ctx.strokeStyle = "#F2EFE9";
         ctx.lineWidth = 2.4;
-        for (const [u, v] of edges) {
+        for (const [u, v] of [[0,1],[1,2],[2,3],[2,4],[2,5]]) {
           ctx.beginPath();
           ctx.moveTo(joints[u][0], joints[u][1]);
           ctx.lineTo(joints[v][0], joints[v][1]);
@@ -1512,31 +953,25 @@
         }
       }
     }
-    requestAnimationFrame(drawFrame);
+    requestAnimationFrame(renderLoop);
 
-    /* ==============================================================
-       5. GENERATE 3D ASSET PIPELINE CALL
-       ============================================================== */
+    // Oluşturma İsteği
     const genBtn = document.getElementById("genBtn");
-    const genBtnText = document.getElementById("genBtnText");
-    const statusDot = document.getElementById("statusDot");
-    const statusText = document.getElementById("status");
     const downloadBtn = document.getElementById("downloadBtn");
+    const statusEl = document.getElementById("status");
 
     downloadBtn.onclick = () => {
       if (!state.lastGlbBlob) return;
-      const url = URL.createObjectURL(state.lastGlbBlob);
       const a = document.createElement("a");
-      a.href = url;
-      a.download = "redis3d_asset.glb";
+      a.href = URL.createObjectURL(state.lastGlbBlob);
+      a.download = "redis3d_model.glb";
       a.click();
     };
 
     genBtn.onclick = async () => {
       genBtn.disabled = true;
-      genBtnText.textContent = "Brewing 3D...";
-      statusDot.classList.add("busy");
-      statusText.textContent = "Consilience-3D + PATR-2 + QuadRetopo running...";
+      genBtn.textContent = "Oluşturuluyor...";
+      statusEl.textContent = "Üretiliyor...";
 
       try {
         const res = await fetch("/api/v1/generate", {
@@ -1547,14 +982,14 @@
             image_b64: state.imageB64,
             candidates: state.candidates,
             nfe_steps: state.nfeSteps,
-            patr_steps: state.patrSteps,
+            patr_steps: state.proMode ? 6 : 2,
             retopo_quads: state.retopoQuads,
-            auto_rig: state.proMode,
-            sym_lock: state.symLock,
+            auto_rig: state.autoRig,
+            sym_lock: state.proMode,
           }),
         });
         if (!res.ok) {
-          statusText.textContent = `Generation error: HTTP ${res.status}`;
+          statusEl.textContent = `Hata: ${res.status}`;
           return;
         }
         const buf = await res.arrayBuffer();
@@ -1562,32 +997,15 @@
         downloadBtn.disabled = false;
 
         const parsed = parseGlbBuffer(buf);
-        if (parsed) {
-          state.mesh = parsed;
-          document.getElementById("meshStatsPill").textContent =
-            `${parsed.vertsCount} verts · ${parsed.trisCount} tris · Watertight ${res.headers.get("X-Watertight") || "True"}`;
-        }
+        if (parsed) state.mesh = parsed;
 
-        const latMs = res.headers.get("X-Latency-Ms") || "?";
-        const peakMb = res.headers.get("X-Peak-VRAM-MB") || "?";
-        const spillMb = res.headers.get("X-Spill-MB") || "0.0";
-        document.getElementById("slaLatency").textContent = `${latMs} ms`;
-        document.getElementById("slaVram").textContent = `${peakMb} MB`;
-        document.getElementById("slaSpill").textContent = `${spillMb} MB`;
-
-        const peakNum = parseFloat(peakMb);
-        if (!Number.isNaN(peakNum)) {
-          renderRadialDial(Math.min(100, (peakNum / 2048) * 100));
-          document.getElementById("vramText").textContent = `${peakNum.toFixed(0)} MB / 2048 MB`;
-        }
-
-        statusText.textContent = `Ready · ${latMs} ms · Peak ${peakMb} MB`;
+        const ms = res.headers.get("X-Latency-Ms") || "?";
+        statusEl.textContent = `Tamamlandı · ${ms} ms`;
       } catch (err) {
-        statusText.textContent = `Connection failed: ${err.message}`;
+        statusEl.textContent = "Bağlantı hatası";
       } finally {
         genBtn.disabled = false;
-        genBtnText.textContent = "Generate";
-        statusDot.classList.remove("busy");
+        genBtn.textContent = "Oluştur";
       }
     };
   </script>
