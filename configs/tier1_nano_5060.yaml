@@ -1,0 +1,25 @@
+# Tier 1: Nano Laptop 5060 (10K-50K procedural CAD/organic/rigged assets)
+tier: tier1_nano_5060
+hardware_config: configs/hw_rtx5060_laptop.yaml
+corpus:
+  num_assets: 10000
+  workers: 16
+  shard_size: 256
+  output_dir: data/tier1_wov_shards
+model:
+  latent_dim: 24
+  stage2_dim: 256
+  stage2_groups: 4
+  window_size: 64
+  registers: 16
+training:
+  optimizer: cpu_adamw
+  batch_size: 8
+  max_vram_mb: 5200
+  lr: 1.0e-3
+  ema_decay: 0.995
+  resume_checkpoint: checkpoints/tier1_latest.pt
+quantization:
+  nvfp4_block: 16
+  svd_rank: 16
+  biloco_rank: 256

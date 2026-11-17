@@ -1,0 +1,26 @@
+# Tier 2: Studio 5060 Overnight Incremental Resume (100K-300K commercial-clean .wov assets)
+tier: tier2_studio_5060
+hardware_config: configs/hw_rtx5060_laptop.yaml
+corpus:
+  num_assets: 150000
+  workers: 16
+  shard_size: 512
+  output_dir: data/tier2_wov_shards
+  license_allowlist: [MIT, Apache-2.0, CC0, CC-BY-4.0, Procedural-Owned]
+model:
+  latent_dim: 24
+  stage2_dim: 384
+  stage2_groups: 4
+  window_size: 64
+  registers: 16
+training:
+  optimizer: cpu_adamw
+  batch_size: 16
+  max_vram_mb: 5200
+  lr: 5.0e-4
+  ema_decay: 0.999
+  resume_checkpoint: checkpoints/tier2_latest.pt
+quantization:
+  nvfp4_block: 16
+  svd_rank: 16
+  biloco_rank: 256

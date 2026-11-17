@@ -1,0 +1,25 @@
+# Tier 3: Cluster Scale DDP/FSDP (500K-2M commercial-clean assets -> ~458 MB startup weights)
+tier: tier3_cluster_scale
+corpus:
+  num_assets: 1000000
+  workers: 64
+  shard_size: 1024
+  output_dir: data/tier3_wov_shards
+  license_allowlist: [MIT, Apache-2.0, CC0, CC-BY-4.0, Procedural-Owned]
+model:
+  latent_dim: 24
+  stage2_dim: 512
+  stage2_groups: 5
+  window_size: 64
+  registers: 16
+training:
+  optimizer: adamw_fsdp
+  distributed: fsdp
+  batch_size: 64
+  lr: 3.0e-4
+  ema_decay: 0.9995
+  resume_checkpoint: checkpoints/tier3_latest.pt
+quantization:
+  nvfp4_block: 16
+  svd_rank: 16
+  biloco_rank: 256
