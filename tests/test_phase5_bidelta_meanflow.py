@@ -112,7 +112,7 @@ def test_jvp_free_meanflow_1nfe_2nfe_matches_32step_ode():
 
     model = Stage2LatentMeanFlow(
         latent_dim=LATENT_DIM,
-        model_dim=128,
+        model_dim=64,
         cond_dim=cond_dim,
         num_groups=1,
         num_heads=4,
@@ -124,9 +124,9 @@ def test_jvp_free_meanflow_1nfe_2nfe_matches_32step_ode():
         model=model,
         z1_dataset=z1_data,
         cond_pooled_dataset=cond_data,
-        num_steps=380,
+        num_steps=500,
         batch_size=16,
-        lr=2.5e-3,
+        lr=3e-3,
         ema_decay=0.95,
         max_vram_mb=4096,
         use_ot=True,

@@ -281,7 +281,9 @@ def compute_meanflow_loss(
         u_target = (w1 * u_1 + w2 * u_2).clamp(-10.0, 10.0)
 
     u_pred = model(z_r, r, t, cond_pooled, w_cfg=w_cfg, cond_tokens=cond_tokens)
-    loss_split = F.mse_loss(u_pred, u_target.detach())
+    loss_split = F.mse_loss(u_pred, u_target.detach()) + 0.5 * F.mse_loss(
+        u_pred[:n_anchor], v_target[:n_anchor]
+    )
 
     total_loss = boundary_weight * loss_boundary + split_weight * loss_split
     metrics = {
