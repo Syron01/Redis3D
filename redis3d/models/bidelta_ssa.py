@@ -153,8 +153,10 @@ class BiDeltaBlock(nn.Module):
         h, gate1 = self.adaln1(x, cond)
 
         q, k, v = self.qkv(h).chunk(3, dim=-1)
-        q = F.normalize(F.silu(q).view(bsz, seq_len, self.num_heads, self.head_dim), dim=-1).transpose(1, 2)
-        k = F.normalize(F.silu(k).view(bsz, seq_len, self.num_heads, self.head_dim), dim=-1).transpose(1, 2)
+        q_raw = F.silu(q).view(bsz, seq_len, self.num_heads, self.head_dim)
+        k_raw = F.silu(k).view(bsz, seq_len, self.num_heads, self.head_dim)
+        q = (q_raw * torch.rsqrt(q_raw.pow(2).sum(dim=-1, keepdim=True) + 1e-4)).transpose(1, 2)
+        k = (k_raw * torch.rsqrt(k_raw.pow(2).sum(dim=-1, keepdim=True) + 1e-4)).transpose(1, 2)
         v = v.view(bsz, seq_len, self.num_heads, self.head_dim).transpose(1, 2)
 
         g_ab = self.gates(h).view(bsz, seq_len, self.num_heads, 2).permute(0, 2, 1, 3)

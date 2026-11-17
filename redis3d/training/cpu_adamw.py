@@ -83,9 +83,9 @@ class CPUAdamW(Optimizer):
                 state["step"] += 1
                 step = state["step"]
 
-                # Move grad to CPU float32 for high-precision moment accumulation
-                grad_cpu = grad.detach().to("cpu", dtype=torch.float32, non_blocking=True)
-                p_cpu = p.detach().to("cpu", dtype=torch.float32, non_blocking=True)
+                # Move grad to CPU float32 synchronously for race-free moment accumulation
+                grad_cpu = grad.detach().to("cpu", dtype=torch.float32)
+                p_cpu = p.detach().to("cpu", dtype=torch.float32)
 
                 exp_avg = state["exp_avg"]
                 exp_avg_sq = state["exp_avg_sq"]
@@ -108,6 +108,6 @@ class CPUAdamW(Optimizer):
                 p_cpu.addcdiv_(exp_avg, denom, value=-step_size)
 
                 # Copy updated weights back to GPU parameter
-                p.copy_(p_cpu.to(p.device, dtype=p.dtype, non_blocking=True))
+                p.copy_(p_cpu.to(p.device, dtype=p.dtype))
 
         return loss

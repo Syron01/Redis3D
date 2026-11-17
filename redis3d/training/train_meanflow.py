@@ -9,6 +9,7 @@ Uses:
 from __future__ import annotations
 
 import copy
+import math
 from typing import Optional
 
 import torch
@@ -56,6 +57,11 @@ def train_meanflow_on_latents(
 
     with VRAMBudgetGuard(max_mb=max_vram_mb):
         for step in range(num_steps):
+            # Cosine LR decay to eliminate constant-LR jitter near convergence
+            lr_scale = 0.05 + 0.95 * 0.5 * (1.0 + math.cos(math.pi * step / max(1, num_steps)))
+            for pg in optimizer.param_groups:
+                pg["lr"] = lr * lr_scale
+
             model.train()
             idx = torch.randint(0, n_samples, (min(batch_size, n_samples),), device=z1_dataset.device)
             z1 = z1_dataset[idx]

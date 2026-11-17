@@ -137,6 +137,11 @@ class Stage2LatentMeanFlow(nn.Module):
         )
         cond_vec = cond_pooled + self.time_cfg_mlp(t_emb)
         h = self.in_proj(z_t)
+        # Add sinusoidal Morton-order positional encoding so tokens are spatially distinct
+        seq_len = z_t.shape[1]
+        pos_idx = torch.arange(seq_len, device=z_t.device, dtype=z_t.dtype) / max(1, seq_len)
+        pos_emb = sinusoidal_time_embed(pos_idx, self.model_dim).unsqueeze(0)
+        h = h + pos_emb
         h = self.backbone(h, cond_vec, cond_tokens=cond_tokens)
         return self.out_proj(h)
 
@@ -256,6 +261,11 @@ def compute_meanflow_loss(
     r = r * 0.8
     t = (r + 0.1 + (1.0 - r - 0.1) * t).clamp(max=1.0)
     m = r + (t - r) * (0.2 + 0.6 * torch.rand(bsz, device=device, dtype=dtype))
+    # Anchor 25% of batch to full [0, 1] 1-NFE / 2-NFE consistency interval
+    n_anchor = max(1, bsz // 4)
+    r[:n_anchor] = 0.0
+    m[:n_anchor] = 0.5
+    t[:n_anchor] = 1.0
 
     r_exp = r.view(bsz, 1, 1)
     z_r = (1.0 - r_exp) * z0 + r_exp * z1
@@ -268,7 +278,7 @@ def compute_meanflow_loss(
         dt_total = (t - r).clamp(min=1e-4).view(bsz, 1, 1)
         w1 = (m - r).view(bsz, 1, 1) / dt_total
         w2 = (t - m).view(bsz, 1, 1) / dt_total
-        u_target = w1 * u_1 + w2 * u_2
+        u_target = (w1 * u_1 + w2 * u_2).clamp(-10.0, 10.0)
 
     u_pred = model(z_r, r, t, cond_pooled, w_cfg=w_cfg, cond_tokens=cond_tokens)
     loss_split = F.mse_loss(u_pred, u_target.detach())

@@ -9,8 +9,8 @@ Generated on: `cuda` (`RTX 5060 Laptop sm_120` verified)
 | **Peak Inference VRAM (Resident)** | `250.0 MB` | `<= 2048 MB` | **PASS** |
 | **Peak Inference VRAM (Streaming)** | `199.3 MB` | `<= 2048 MB` | **PASS** |
 | **Shared GPU Memory Spill** | `0.0 MB` | `0.0 MB` | **PASS** |
-| **End-to-End Latency (K=4, 2-NFE, PATR-2)** | `2.602 s` | `<= 3.0 s` | **PASS** |
-| **Streaming Mode Latency** | `2.657 s` | `<= 3.0 s` | **PASS** |
+| **End-to-End Latency (K=4, 2-NFE, PATR-2)** | `2.577 s` | `<= 3.0 s` | **PASS** |
+| **Streaming Mode Latency** | `2.649 s` | `<= 3.0 s` | **PASS** |
 
 ## 2. Topology, Retopology & UV Accuracy SLAs (20 Assets)
 

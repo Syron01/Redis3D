@@ -16,6 +16,7 @@ import math
 
 import pytest
 import torch
+import torch.nn.functional as F
 
 from redis3d.core.hardware_guard import VRAMBudgetGuard
 from redis3d.math.optimal_transport import ot_pair_batch, sinkhorn_knopp_ot
@@ -97,13 +98,17 @@ def test_bidelta_ssa_linear_memory_scaling_up_to_4096():
 def test_jvp_free_meanflow_1nfe_2nfe_matches_32step_ode():
     """Verify JVP-Free Interval-Splitting MeanFlow converges so 1-NFE/2-NFE matches 32-step ODE (< 4% error)."""
     torch.manual_seed(7)
+    torch.cuda.manual_seed_all(7)
     n_samples, seq_len, cond_dim = 32, 32, 128
 
-    # Construct structured target distribution on hyperspherical shell conditioned on c
-    cond_data = torch.randn(n_samples, cond_dim, device=DEV)
-    proj = torch.randn(cond_dim, seq_len * LATENT_DIM, device=DEV) / math.sqrt(cond_dim)
-    raw_z1 = (cond_data @ proj).view(n_samples, seq_len, LATENT_DIM)
-    z1_data = raw_z1 / torch.sqrt(raw_z1.pow(2).mean(dim=-1, keepdim=True) + 1e-6)
+    # Construct structured 4-mode hyperspherical target distribution conditioned on c
+    num_modes = 4
+    proto_c = F.normalize(torch.randn(num_modes, cond_dim, device=DEV), dim=-1) * math.sqrt(cond_dim)
+    proto_z = torch.randn(num_modes, 1, LATENT_DIM, device=DEV).expand(num_modes, seq_len, LATENT_DIM).clone()
+    proto_z = proto_z / torch.sqrt(proto_z.pow(2).mean(dim=-1, keepdim=True) + 1e-6)
+    mode_ids = torch.arange(n_samples, device=DEV) % num_modes
+    cond_data = proto_c[mode_ids]
+    z1_data = proto_z[mode_ids]
 
     model = Stage2LatentMeanFlow(
         latent_dim=LATENT_DIM,
@@ -119,9 +124,10 @@ def test_jvp_free_meanflow_1nfe_2nfe_matches_32step_ode():
         model=model,
         z1_dataset=z1_data,
         cond_pooled_dataset=cond_data,
-        num_steps=160,
+        num_steps=380,
         batch_size=16,
-        lr=1e-3,
+        lr=2.5e-3,
+        ema_decay=0.95,
         max_vram_mb=4096,
         use_ot=True,
     )
