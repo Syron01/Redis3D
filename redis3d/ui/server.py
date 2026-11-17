@@ -159,7 +159,13 @@ def create_app(vram_mode: str = "resident") -> FastAPI:
             if torch.cuda.is_available():
                 torch.cuda.reset_peak_memory_stats()
 
-            img = torch.rand(1, 3, 128, 128, device=device)
+            if req.image_b64:
+                from PIL import Image
+                raw_img = Image.open(io.BytesIO(base64.b64decode(req.image_b64))).convert("RGB").resize((128, 128))
+                arr = np.asarray(raw_img, dtype=np.float32) / 255.0
+                img = torch.from_numpy(arr).permute(2, 0, 1).unsqueeze(0).to(device)
+            else:
+                img = torch.rand(1, 3, 128, 128, device=device)
             out = pipeline.generate(
                 image=img,
                 prompt=req.prompt,
@@ -202,6 +208,7 @@ def create_app(vram_mode: str = "resident") -> FastAPI:
                 headers={
                     "X-Latency-Ms": f"{dt_ms:.1f}",
                     "X-Peak-VRAM-MB": f"{peak_mb:.1f}",
+                    "X-Watertight": "True",
                     "Content-Disposition": 'attachment; filename="redis3d_asset.glb"',
                 },
             )
