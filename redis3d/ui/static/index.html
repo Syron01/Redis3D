@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Redis3D Pro — Commercial 3D Foundation Studio</title>
+  <style>
+    :root {
+      --bg: #0b0e14; --panel: #131822; --border: #232b3b;
+      --text: #e6edf3; --muted: #8b949e; --accent: #3b82f6; --ok: #10b981;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background: var(--bg); color: var(--text); display: grid; grid-template-columns: 340px 1fr; height: 100vh; overflow: hidden; }
+    aside { background: var(--panel); border-right: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; }
+    h1 { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.02em; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.72rem; background: rgba(16,185,129,0.15); color: var(--ok); border: 1px solid rgba(16,185,129,0.3); }
+    label { font-size: 0.8rem; color: var(--muted); display: block; margin-bottom: 4px; }
+    textarea, input, select { width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 0.85rem; }
+    button { background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 10px 14px; font-weight: 600; cursor: pointer; }
+    button:hover { opacity: 0.92; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .gauge { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; font-size: 0.8rem; }
+    .bar { height: 6px; background: #1f2937; border-radius: 4px; margin-top: 6px; overflow: hidden; }
+    .bar > div { height: 100%; background: var(--ok); width: 25%; transition: width 0.25s; }
+    main { position: relative; display: flex; flex-direction: column; }
+    .toolbar { display: flex; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--border); background: var(--panel); align-items: center; font-size: 0.82rem; }
+    .toolbar button { background: var(--bg); border: 1px solid var(--border); padding: 6px 10px; font-size: 0.78rem; }
+    #viewport { flex: 1; position: relative; }
+  </style>
+</head>
+<body>
+  <aside>
+    <div>
+      <h1>Redis3D Pro Studio</h1>
+      <span class="badge">sm_120 NVFP4 + BiDelta-SSA</span>
+    </div>
+    <div class="gauge">
+      <div>VRAM: <strong id="vramText">-- MB</strong> / 2048 MB SLA</div>
+      <div class="bar"><div id="vramBar"></div></div>
+    </div>
+    <div>
+      <label>Prompt</label>
+      <textarea id="prompt" rows="3">precision armored mech helmet with sharp beveled visor</textarea>
+    </div>
+    <div class="row">
+      <div>
+        <label>Candidates (Consilience)</label>
+        <input id="candidates" type="number" value="4" min="1" max="8" />
+      </div>
+      <div>
+        <label>NFE Steps</label>
+        <input id="steps" type="number" value="1" min="1" max="4" />
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Retopo Quads</label>
+        <input id="quads" type="number" value="512" min="64" max="32000" />
+      </div>
+      <div>
+        <label>Auto-Rig</label>
+        <select id="rig">
+          <option value="true" selected>Enabled (LBS)</option>
+          <option value="false">Disabled</option>
+        </select>
+      </div>
+    </div>
+    <button id="genBtn">Generate 3D Asset (GLB)</button>
+    <div id="status" style="font-size:0.8rem;color:var(--muted);">Ready.</div>
+  </aside>
+  <main>
+    <div class="toolbar">
+      <span>Inspector:</span>
+      <button id="modePbr">PBR</button>
+      <button id="modeWire">Wireframe</button>
+      <button id="modeUv">UV Grid</button>
+      <button id="modeBone">Skeleton</button>
+      <button id="modePrint">Print Heatmap</button>
+    </div>
+    <div id="viewport"></div>
+  </main>
+  <script>
+    const wsProto = location.protocol === "https:" ? "wss:" : "ws:";
+    try {
+      const ws = new WebSocket(`${wsProto}//${location.host}/ws/telemetry`);
+      ws.onmessage = (ev) => {
+        const d = JSON.parse(ev.data);
+        document.getElementById("vramText").textContent = `${d.vram_mb.toFixed(0)} MB`;
+        document.getElementById("vramBar").style.width = `${Math.min(100, (d.vram_mb / 2048) * 100)}%`;
+      };
+    } catch (_) {}
+
+    document.getElementById("genBtn").onclick = async () => {
+      const st = document.getElementById("status");
+      st.textContent = "Generating (Consilience-3D + PATR-2 + QuadRetopo)...";
+      const res = await fetch("/api/v1/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-API-Key": "redis3d-local-dev" },
+        body: JSON.stringify({
+          prompt: document.getElementById("prompt").value,
+          candidates: Number(document.getElementById("candidates").value),
+          nfe_steps: Number(document.getElementById("steps").value),
+          retopo_quads: Number(document.getElementById("quads").value),
+          auto_rig: document.getElementById("rig").value === "true"
+        })
+      });
+      if (!res.ok) {
+        st.textContent = `Error: ${res.status}`;
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "redis3d_asset.glb";
+      a.click();
+      st.textContent = `Done in ${res.headers.get("X-Latency-Ms") || "?"} ms (Peak VRAM: ${res.headers.get("X-Peak-VRAM-MB") || "?"} MB)`;
+    };
+  </script>
+</body>
+</html>
