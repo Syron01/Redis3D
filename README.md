@@ -2,7 +2,7 @@
 
 RTX 5060 Laptop (sm_120) üzerinde 2 GB VRAM tavanıyla çalışan yerel 3D üretim motoru. Hedef: bulut 3D servislerine (Tripo, Meshy) cihazda çalışan bir alternatif. Dış API yok, model ağırlığı indirilmiyor.
 
-Durum: Faz 2/10 tamam. W-OVoxel² + CAD-Snap ve Deterministik Topoloji Onarımı gerçek GPU'da kanıtlı; 30 testin 30'u yeşil.
+Durum: Faz 3/10 tamam. W-OVoxel², Topoloji Onarımı ve Lisans Denetimli .wov Veri Fabrikası kanıtlı; 41 testin 41'i yeşil.
 
 ## Çalıştırma
 
@@ -15,34 +15,33 @@ Gerçek çıktı (17 Kasım 2026, bu makine, RTX 5060 Laptop):
 
 ```text
 CAD lossless: chamfer=4.55e-08, cos_x=1.000000, cos_y=1.000000, edge_verts=231
-Cloth lossless: chamfer=4.69e-08, cells=725636, tris=1344756
-Shell lossless: chamfer=1.68e-06, outer/inner samples=18283/11717
+Cloth lossless: chamfer=4.68e-08, cells=725636, tris=1344756
+Shell lossless: chamfer=1.68e-06, outer/inner samples=18281/11719
 Touching parts lossless: chamfer=6.60e-08, part0/part1 faces=83842/84666
-Twin spheres: chamfer=2.41e-06, dual-sheet cells=60
-Pruned sphere: tokens 151400->512 (295.70x), extract=30.7 ms, F=0.99997
-CAD prune: ratio=21.12x, sharp tokens preserved=1918
-Phase 2 gate: 50/50 manifold+watertight, mean=2.5 ms/mesh, worst=6.8 ms, peak VRAM=9.2 MB
-============================= 30 passed in 34.56s =============================
+Pruned sphere: tokens 151400->512 (295.70x), extract=49.8 ms, F=0.99997
+Phase 2 gate: 50/50 manifold+watertight, mean=2.8 ms/mesh, worst=6.8 ms
+WOV SLA: 2048-token asset compressed size: 125.05 KB (SLA: < 160.0 KB)
+Phase 3 gate: 256 assets in 3.56s (72.0 assets/s, 16 CPU workers), shard avg 32.9 KB
+============================= 41 passed in 53.56s =============================
 ```
 
 ## Şu an çalışanlar
 
 - Alan-free Dual-Grid + Dual-Sheet çıkarıcı: SDF işaret değişimlerinden Hermite örnekleri, kesişimler 16 adım bisection ile bulunur.
 - CAD-Snap: normal kovaryansı eigen-rank analizi; rank-2 keskin kenar ve rank-3 köşeler 3-düzlem kesişimine kilitlenir.
-- QEF fp64 Cholesky: rank-1 sayfalarda cond ~1e6; kapalı-form Cholesky ile sayısal kararlılık.
-- Haar-lifting wavelet budama: mask-normalize ortalama; küre 295.7x, CAD 21.1x, F-Score@0.01 = 0.99997.
-- Deterministik Topoloji Onarımı: yarım-kenar analizi, yapışık tepe noktası ayırma, delik köprüleme, ters normal düzeltme, Sym-Lock ikili ayna hizalama (50/50 kusursuz onarım, ortalama 2.5 ms).
-- `VRAMBudgetGuard(max_mb=2048)`: 1545.1 MB geçer, 2109 MB bloklar, shared-RAM taşması 0 MB.
+- Deterministik Topoloji Onarımı: yarım-kenar analizi, yapışık köşe ayırma, delik köprüleme, ters normal düzeltme (50/50 onarım, 2.8 ms).
+- Lisans Denetimi: ticari allowlist (`MIT`, `Apache-2.0`, `CC0`, `Procedural-Owned`), kontaminasyon filtresi (`CC-BY-NC`, `GPL` %100 ret).
+- 16-Worker Prosedürel Veri Motoru: 6 zengin kategori (CAD, Organik, Kumaş, İskelet, Kabuk, Montaj), 256 varlık / 3.56s.
+- Zstd `.wov` v2 Codec: 64-bit Morton, PBR, iskelet ve intrinsics içeren binary format (125 KB, SLA < 160 KB).
 
 ## Gereksinimler
 
-Windows 11, RTX 5060 Laptop (sm_120), Python 3.12, torch 2.11.0+cu128, pynvml, scipy, numpy, matplotlib.
+Windows 11, RTX 5060 Laptop (sm_120), Python 3.12, torch 2.11.0+cu128, pynvml, scipy, numpy, zstandard.
 
 ## Sınırlar
 
 - Yalnızca sm_120 doğrulandı; başka GPU'da probe hata verir.
-- Delik kapatma düz merkez fanı kullanır; geniş deliklerde eğrilik kopyalanmaz.
-- Mesh çıkarımı ve onarım hazır; üretici model eğitimi (Faz 4-5) sonraki adımlarda.
+- Veri hattı ve derleyici hazır; üretici sinir ağları (Faz 4-5) sonraki adımlarda.
 
 ## Yol haritası
 
@@ -53,7 +52,7 @@ Faz kabul kapıları `roadfinal.md` içinde tanımlı. Her faz, gerçek GPU'da `
 0. Donanım tanılama + VRAM watchdog — tamam
 1. W-OVoxel² + CAD-Snap matematik çekirdeği — tamam
 2. Deterministik topoloji onarımı — tamam
-3. Lisans denetimi + .wov veri fabrikası
+3. Lisans denetimi + .wov veri fabrikası — tamam
 4. PIXL-Intrinsic + SW-VAE
 5. BiDelta-SSA + OT-MeanFlow-3D
 6. NVFP4 + BiLoCo-SVDQuant
