@@ -1,47 +1,48 @@
 # Redis3D
 
-RTX 5060 Laptop (sm_120) üzerinde 2 GB VRAM tavanıyla çalışan yerel 3D üretim motoru. Hedef: bulut 3D servislerine (Tripo, Meshy) cihazda çalışan bir alternatif. Dış API yok, model ağırlıkları indirilmiyor.
+RTX 5060 Laptop (sm_120) üzerinde 2 GB VRAM tavanıyla çalışan yerel 3D üretim motoru. Hedef: bulut 3D servislerine (Tripo, Meshy) cihazda çalışan bir alternatif. Dış API yok, model ağırlığı indirilmiyor.
 
-Durum: Faz 0/10 tamam. Donanım korumaları ve VRAM watchdog çalışıyor; üretim pipeline'ı henüz yok.
+Durum: Faz 1/10 tamam. W-OVoxel² + CAD-Snap matematik çekirdeği ve mesh çıkarımı gerçek GPU'da kanıtlı; üretim pipeline'ı henüz yok.
 
 ## Çalıştırma
 
 ```bash
 pip install -r requirements.txt
-python -m pytest tests/test_phase0_hardware.py -v -s
+python -m pytest tests/ -v -s
 ```
 
-Gerçek çıktı (17 Kasım 2026, bu makine):
+Gerçek çıktı (17 Kasım 2026, bu makine, RTX 5060 Laptop):
 
 ```text
-GPU           : NVIDIA GeForce RTX 5060 Laptop GPU (sm_120)
-Driver        : 617.14 | torch 2.11.0+cu128 | CUDA 12.8
-AC adapter    : True (battery 48%)
-Power limits  : enforced 115 W
-BF16 matmul   : OK
-FP8 scaled_mm : OK (rel_err=0.0375)
-1.5 GB pass: peak=1545.1 MB, shared_spill=0.0 MB
-2.1 GB correctly rejected: 2109.1 MB > 2048.0 MB hard cap
-============================= 11 passed in 10.58s =============================
+CAD lossless: chamfer=4.55e-08, cos_x=1.000000, cos_y=1.000000, edge_verts=231
+Cloth lossless: chamfer=4.68e-08, cells=725636, tris=1344756
+Shell lossless: chamfer=1.68e-06, outer/inner samples=18282/11718
+Touching parts lossless: chamfer=6.60e-08, part0/part1 faces=83842/84666
+Twin spheres: chamfer=2.41e-06, dual-sheet cells=60
+Pruned sphere: tokens 151400->512 (295.70x), extract=73.6 ms, F=0.99997
+CAD prune: ratio=21.12x, sharp tokens preserved=1918
+============================= 22 passed in 46.80s =============================
 ```
 
 ## Şu an çalışanlar
 
-- `VRAMBudgetGuard(max_mb=2048)`: tahsis öncesi projection + PyTorch peak denetimi. 1.5 GB gerçek tahsis geçer, 2.1 GB reddedilir.
-- Güç watchdog'u: NVML enforced limit + Windows AC adaptör durumu. Pilde veya 70 W altında uyarı üretir.
-- Shared-RAM taşma denetimi: Windows `GPU Process Memory\Shared Usage` sayacından okunur; sözleşme 0 MB.
-- UTF-8 + pathlib her yerde; Türkçe yerel ayar (`cp1254`) dosya adları testli.
+- Alan-free Dual-Grid + Dual-Sheet çıkarıcı: SDF işaret değişimlerinden Hermite örnekleri, kesişimler gerçek SDF üzerinde 16 adım bisection ile bulunur (uç-değer enterpolasyonu kutu SDF'lerinde yanlı).
+- CAD-Snap: normal kovaryansının eigen-rank analizi; rank-2 keskin kenarlar ve rank-3 köşeler tam 3-düzlem kesişimine sabitlenir, budanmaz.
+- QEF fp64 Cholesky: rank-1 sayfalarda cond ~1e6; fp32 adjugate iptali köşe bileşenlerini bozduğu için kapalı-form Cholesky kullanılır.
+- Haar-lifting wavelet budama: mask-normalize ortalamalar, rank-1 gruplar sıkıştırılır; küre 295.7x, CAD 21.1x, F-Score@0.01 = 0.99997.
+- `VRAMBudgetGuard(max_mb=2048)`: Faz 1'in en ağır şekli (cloth, 725K hücre) 1353.6 MB peak, shared-RAM taşması 0 MB. 2.1 GB tahsis reddedilir.
+- 64-bit Morton + searchsorted LUT, octahedral normal codec (roundtrip cos > 1-1e-6), Türkçe UTF-8 yol testi.
 
 ## Gereksinimler
 
-Windows 11, RTX 5060 Laptop (sm_120), Python 3.12, torch 2.11.0+cu128, pynvml.
+Windows 11, RTX 5060 Laptop (sm_120), Python 3.12, torch 2.11.0+cu128, pynvml, scipy, numpy.
 
 ## Sınırlar
 
 - Yalnızca sm_120 doğrulandı; başka GPU'da probe hata verir.
-- Mesh üretimi, eğitim ve arayüz sonraki fazlarda; bugün çalışan şey koruma katmanı.
-- WDDM, NVML'den proses-başına VRAM'i gizler; PyTorch peak otoritedir.
-- Triton kurulu değil; tüm çekirdekler saf PyTorch fallback ile yazılacak.
+- Lossless kapılar analitik SDF + analitik normal ile ölçüldü; normalsiz SDF'lerde gradyan fallback'i h/16 stencil kullanır, keskin kenara h/16'den yakın örneklerde normal kirlenir.
+- Mesh üretimi var ama topoloji onarımı, eğitim ve arayüz sonraki fazlarda.
+- WDDM, NVML'den proses-başına VRAM'i gizler; PyTorch peak otoritedir. Triton kurulu değil; çekirdekler saf PyTorch fallback ile yazılacak.
 
 ## Yol haritası
 
@@ -50,7 +51,7 @@ Faz kabul kapıları `roadfinal.md` içinde tanımlı. Her faz, gerçek GPU'da `
 <details><summary>Faz listesi</summary>
 
 0. Donanım tanılama + VRAM watchdog — tamam
-1. W-OVoxel² + CAD-Snap matematik çekirdeği
+1. W-OVoxel² + CAD-Snap matematik çekirdeği — tamam
 2. Deterministik topoloji onarımı
 3. Lisans denetimi + .wov veri fabrikası
 4. PIXL-Intrinsic + SW-VAE
