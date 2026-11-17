@@ -53,13 +53,13 @@ Faz kabul kapıları `roadfinal.md` içinde tanımlı. Her faz, gerçek GPU'da `
 1. W-OVoxel² + CAD-Snap matematik çekirdeği — tamam
 2. Deterministik topoloji onarımı — tamam
 3. Lisans denetimi + .wov veri fabrikası — tamam
-4. PIXL-Intrinsic + SW-VAE
-5. BiDelta-SSA + OT-MeanFlow-3D
-6. NVFP4 + BiLoCo-SVDQuant
-7. Consilience-3D + PATR-2
-8. Retopo / UV / rig / print / export
-9. Web stüdyo + API + Blender + MCP
-10. Tier-1 eğitim + SLA benchmark raporu
+4. PIXL-Intrinsic + SW-VAE — tamam
+5. BiDelta-SSA + OT-MeanFlow-3D — tamam
+6. NVFP4 + BiLoCo-SVDQuant — tamam
+7. Consilience-3D + PATR-2 — tamam
+8. Retopo / UV / rig / print / export — tamam
+9. Web stüdyo + API + Blender + MCP — tamam
+10. Tier-1 eğitim + SLA benchmark raporu — tamam
 
 </details>
 
