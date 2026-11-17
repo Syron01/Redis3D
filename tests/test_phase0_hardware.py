@@ -9,6 +9,8 @@ Contract (roadfinal.md §7 Phase 0):
 
 from __future__ import annotations
 
+import gc
+
 import pytest
 import torch
 
@@ -35,6 +37,10 @@ _MB = 1024 * 1024
 @pytest.fixture(autouse=True)
 def _clean_vram():
     yield
+    # exception tracebacks from pytest.raises keep frames (and their CUDA
+    # tensors) alive in reference cycles; collect before the next guard
+    # measures its baseline, or peaks leak across tests
+    gc.collect()
     torch.cuda.synchronize()
     torch.cuda.empty_cache()
 
