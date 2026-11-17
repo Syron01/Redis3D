@@ -261,8 +261,8 @@ def compute_meanflow_loss(
     r = r * 0.8
     t = (r + 0.1 + (1.0 - r - 0.1) * t).clamp(max=1.0)
     m = r + (t - r) * (0.2 + 0.6 * torch.rand(bsz, device=device, dtype=dtype))
-    # Anchor 25% of batch to full [0, 1] 1-NFE / 2-NFE consistency interval
-    n_anchor = max(1, bsz // 4)
+    # Anchor 50% of batch to full [0, 1] 1-NFE / 2-NFE consistency interval
+    n_anchor = max(1, bsz // 2)
     r[:n_anchor] = 0.0
     m[:n_anchor] = 0.5
     t[:n_anchor] = 1.0
@@ -281,9 +281,7 @@ def compute_meanflow_loss(
         u_target = (w1 * u_1 + w2 * u_2).clamp(-10.0, 10.0)
 
     u_pred = model(z_r, r, t, cond_pooled, w_cfg=w_cfg, cond_tokens=cond_tokens)
-    loss_split = F.mse_loss(u_pred, u_target.detach()) + 0.5 * F.mse_loss(
-        u_pred[:n_anchor], v_target[:n_anchor]
-    )
+    loss_split = F.mse_loss(u_pred, u_target.detach())
 
     total_loss = boundary_weight * loss_boundary + split_weight * loss_split
     metrics = {
