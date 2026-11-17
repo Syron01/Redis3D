@@ -3,26 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Redis3D Pro Studio</title>
+  <title>Redis3D Pro Studio — Çalışma Alanı</title>
   <style>
     :root {
-      --bg-outer: #E7E6E2;
-      --dark-panel: #1C1C1B;
-      --dark-card: #252523;
-      --dark-track: #2D2D2B;
-      --dark-thumb: #4B4A47;
-      --cream-card: #EFECE6;
-      --stage-card: #F6F4EF;
-      --cream-track: #E5E1D9;
-      --ink-dark: #1C1C1B;
-      --ink-muted: #76726A;
-      --ink-light: #F3F0EA;
-      --ink-light-muted: rgba(243, 240, 234, 0.56);
-      --border-dark: rgba(255, 255, 255, 0.08);
-      --border-light: rgba(28, 28, 27, 0.08);
-      --shadow-soft: 0 20px 50px -14px rgba(20, 20, 19, 0.14);
-      --shadow-pill: 0 2px 8px rgba(20, 20, 19, 0.08);
-      --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif;
+      /* Meshy.ai Studio Dark Architecture + Acid Lime Accent */
+      --bg-app: #0C0D10;
+      --bg-rail: #121318;
+      --bg-panel: #16181F;
+      --bg-card: #1E2029;
+      --bg-hover: #262936;
+      --border-subtle: rgba(255, 255, 255, 0.07);
+      --border-strong: rgba(255, 255, 255, 0.14);
+      --text-primary: #F4F5F7;
+      --text-secondary: #9CA3AF;
+      --text-muted: #6B7280;
+      --lime: #BDF347;
+      --lime-hover: #CCF76E;
+      --lime-glow: rgba(189, 243, 71, 0.22);
+      --purple-soft: rgba(139, 92, 246, 0.16);
+      --font: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", system-ui, sans-serif;
     }
 
     * {
@@ -35,189 +34,301 @@
     html, body {
       height: 100%;
       font-family: var(--font);
-      background: var(--bg-outer);
-      color: var(--ink-dark);
+      background: var(--bg-app);
+      color: var(--text-primary);
       overflow: hidden;
-    }
-
-    /* Full-Screen 3D Studio Layout (Tripo / Meshy Architecture) */
-    .studio {
-      height: 100vh;
-      width: 100vw;
-      padding: 14px;
-      display: grid;
-      grid-template-columns: 344px minmax(0, 1fr);
-      gap: 14px;
-    }
-
-    @media (max-width: 900px) {
-      html, body { overflow: auto; }
-      .studio {
-        height: auto;
-        min-height: 100vh;
-        grid-template-columns: 1fr;
-      }
-      .viewport-card { min-height: 520px; }
     }
 
     /* ============================================================
-       SOL KONTROL PANELİ (#1C1C1B + #EFECE6 Alt Kart)
-       Dış R = 30px, Alt Kart Margin P = 8px => İç R = 22px
+       1. ÜST HEADER ÇUBUĞU (52px)
        ============================================================ */
-    .sidebar {
-      background: var(--dark-panel);
-      border-radius: 30px;
-      padding: 8px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      box-shadow: var(--shadow-soft);
-      overflow: hidden;
-    }
-
-    .sidebar-top {
-      padding: 14px 14px 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      flex: 1;
-      min-height: 0;
-    }
-
-    .brand-row {
+    .topbar {
+      height: 52px;
+      background: var(--bg-rail);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 2px 4px;
+      gap: 12px;
     }
 
-    .brand-name {
-      font-size: 19px;
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      color: var(--ink-light);
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-
-    /* Minimal Pro Pill Toggle */
-    .pro-pill {
-      width: 58px;
+    .brand-mark {
+      width: 28px;
       height: 28px;
-      border-radius: 9999px;
-      background: var(--dark-track);
-      border: 1px solid var(--border-dark);
-      padding: 2px;
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-    }
-    .pro-dot {
-      width: 22px;
-      height: 22px;
-      border-radius: 9999px;
-      background: var(--dark-thumb);
-      color: var(--ink-light);
-      font-size: 9px;
-      font-weight: 600;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--lime) 0%, #7ED957 100%);
+      color: #0B0D08;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      transform: translateX(30px);
-      transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), background 0.2s;
+      font-weight: 800;
+      font-size: 14px;
     }
-    .pro-pill[data-pro="false"] .pro-dot {
-      transform: translateX(0);
-      background: #333330;
-      color: var(--ink-light-muted);
+    .brand-text {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .workspace-crumb {
+      font-size: 12px;
+      color: var(--text-muted);
+      padding-left: 10px;
+      border-left: 1px solid var(--border-subtle);
     }
 
-    /* Metinden / Görselden Sekme Kapsülü */
-    .mode-track {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      background: var(--dark-track);
+    /* Meshy Workflow Adım Çubuğu */
+    .workflow-tabs {
+      display: flex;
+      align-items: center;
+      background: var(--bg-app);
       padding: 3px;
-      border-radius: 9999px;
-      border: 1px solid var(--border-dark);
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      gap: 2px;
     }
-    .mode-tab {
-      height: 34px;
+    .wf-tab {
       border: none;
       background: transparent;
-      color: var(--ink-light-muted);
+      color: var(--text-secondary);
       font-family: inherit;
       font-size: 12.5px;
       font-weight: 500;
-      border-radius: 9999px;
+      padding: 6px 14px;
+      border-radius: 7px;
       cursor: pointer;
-      transition: all 0.18s ease;
+      transition: all 0.16s ease;
     }
-    .mode-tab.active {
-      background: var(--dark-thumb);
-      color: var(--ink-light);
+    .wf-tab:hover {
+      color: var(--text-primary);
+    }
+    .wf-tab.active {
+      background: var(--bg-card);
+      color: var(--text-primary);
       font-weight: 600;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
     }
 
-    /* Ana Girdi Alanı */
-    .input-pane {
-      display: none;
-      flex-direction: column;
+    .topbar-right {
+      display: flex;
+      align-items: center;
       gap: 10px;
-      flex: 1;
+    }
+    .status-chip {
+      font-size: 12px;
+      color: var(--text-secondary);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 999px;
+    }
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--lime);
+    }
+    .dot.busy {
+      background: #FBBF24;
+      animation: pulse 0.9s infinite ease-in-out;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+
+    .export-btn {
+      height: 34px;
+      padding: 0 16px;
+      border: none;
+      border-radius: 8px;
+      background: var(--lime);
+      color: #0D1009;
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s ease;
+    }
+    .export-btn:hover:not(:disabled) {
+      background: var(--lime-hover);
+    }
+    .export-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    /* ============================================================
+       2. 4 BÖLGELİ MESHY WORKSPACE GÖVDESİ
+       ============================================================ */
+    .workspace {
+      height: calc(100vh - 52px);
+      display: grid;
+      grid-template-columns: 64px 320px minmax(0, 1fr) 220px;
+    }
+
+    @media (max-width: 1120px) {
+      .workspace {
+        grid-template-columns: 58px 296px minmax(0, 1fr);
+      }
+      .assets-panel { display: none; }
+    }
+    @media (max-width: 820px) {
+      html, body { overflow: auto; }
+      .workspace {
+        height: auto;
+        grid-template-columns: 1fr;
+      }
+      .icon-rail { flex-direction: row !important; width: 100%; overflow-x: auto; }
+      .viewport-stage { min-height: 460px; }
+    }
+
+    /* BÖLGE A: EN SOL İKON RAYI */
+    .icon-rail {
+      background: var(--bg-rail);
+      border-right: 1px solid var(--border-subtle);
+      padding: 12px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .rail-item {
+      width: 50px;
+      padding: 8px 4px;
+      border: none;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 10px;
+      font-weight: 500;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .rail-item:hover {
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+    .rail-item.active {
+      background: rgba(189, 243, 71, 0.12);
+      color: var(--lime);
+    }
+
+    /* BÖLGE B: SOL ÜRETİM PANELİ */
+    .creator-panel {
+      background: var(--bg-panel);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       min-height: 0;
     }
-    .input-pane.active {
+    .panel-scroll {
+      padding: 16px;
       display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .panel-scroll::-webkit-scrollbar { width: 5px; }
+    .panel-scroll::-webkit-scrollbar-thumb { background: #2D303B; border-radius: 99px; }
+
+    .sec-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
-    .prompt-box {
-      width: 100%;
-      flex: 1;
-      min-height: 128px;
-      background: var(--dark-card);
-      border: 1px solid var(--border-dark);
-      border-radius: 18px;
-      padding: 14px;
-      color: var(--ink-light);
+    /* Metin / Görsel Sekmesi */
+    .seg-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--bg-app);
+      padding: 3px;
+      border-radius: 9px;
+      border: 1px solid var(--border-subtle);
+    }
+    .seg-btn {
+      height: 32px;
+      border: none;
+      border-radius: 7px;
+      background: transparent;
+      color: var(--text-secondary);
       font-family: inherit;
-      font-size: 13.5px;
-      line-height: 1.5;
-      resize: none;
-      outline: none;
-      transition: border-color 0.16s;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.16s ease;
     }
-    .prompt-box:focus {
-      border-color: rgba(243, 240, 234, 0.28);
-    }
-    .prompt-box::placeholder {
-      color: rgba(243, 240, 234, 0.34);
+    .seg-btn.active {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-weight: 600;
     }
 
-    /* Görsel Sürükle & Bırak Alanı */
-    .drop-zone {
+    .prompt-area {
+      width: 100%;
+      min-height: 104px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 11px 12px;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 13px;
+      line-height: 1.5;
+      resize: vertical;
+      outline: none;
+    }
+    .prompt-area:focus {
+      border-color: var(--lime);
+    }
+    .prompt-area::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* Görsel Sürükle Bırak */
+    .upload-box {
       position: relative;
-      flex: 1;
-      min-height: 150px;
-      background: var(--dark-card);
-      border: 1.5px dashed rgba(243, 240, 234, 0.18);
-      border-radius: 18px;
+      height: 148px;
+      background: var(--bg-card);
+      border: 1.5px dashed rgba(255, 255, 255, 0.16);
+      border-radius: 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      padding: 16px;
-      text-align: center;
-      color: var(--ink-light-muted);
+      gap: 6px;
+      color: var(--text-secondary);
+      font-size: 12px;
       cursor: pointer;
       overflow: hidden;
-      transition: border-color 0.16s, background 0.16s;
+      transition: border-color 0.15s;
     }
-    .drop-zone:hover {
-      border-color: rgba(243, 240, 234, 0.38);
-      background: #2A2A27;
+    .upload-box:hover {
+      border-color: var(--lime);
     }
-    .drop-zone img {
+    .upload-box img {
       position: absolute;
       inset: 0;
       width: 100%;
@@ -225,482 +336,558 @@
       object-fit: cover;
       display: none;
     }
-    .drop-zone.has-image img {
-      display: block;
-    }
-    .clear-img-btn {
+    .upload-box.has-img img { display: block; }
+    .clear-img {
       position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 26px;
-      height: 26px;
-      border-radius: 9999px;
+      top: 8px;
+      right: 8px;
+      width: 24px;
+      height: 24px;
+      border-radius: 99px;
       border: none;
-      background: rgba(28, 28, 27, 0.8);
-      color: var(--ink-light);
-      font-size: 14px;
+      background: rgba(12, 13, 16, 0.85);
+      color: #fff;
       cursor: pointer;
       display: none;
-      align-items: center;
-      justify-content: center;
       z-index: 2;
     }
-    .drop-zone.has-image .clear-img-btn {
-      display: inline-flex;
+    .upload-box.has-img .clear-img { display: block; }
+
+    /* Stil Seçici Grid (Meshy Art Style Cards) */
+    .style-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .style-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 9px;
+      padding: 10px;
+      text-align: left;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+    }
+    .style-card:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+    .style-card.active {
+      border-color: var(--lime);
+      background: rgba(189, 243, 71, 0.08);
+      color: var(--text-primary);
+    }
+    .style-swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: 5px;
+      flex-shrink: 0;
     }
 
-    .rig-row {
+    /* Ayar Satırları */
+    .option-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .opt-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 6px 6px 2px;
       font-size: 12.5px;
-      color: var(--ink-light-muted);
+      color: var(--text-primary);
+    }
+    .chip-group {
+      display: inline-flex;
+      gap: 4px;
+    }
+    .mini-chip {
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-app);
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 9px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .mini-chip.active {
+      border-color: var(--lime);
+      color: var(--lime);
+      background: rgba(189, 243, 71, 0.09);
     }
 
-    .mini-switch {
-      width: 42px;
-      height: 24px;
-      border-radius: 9999px;
-      background: var(--dark-track);
-      border: 1px solid var(--border-dark);
+    .switch {
+      width: 38px;
+      height: 21px;
+      border-radius: 999px;
+      background: #2D303B;
+      border: none;
       padding: 2px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
+      transition: background 0.18s;
     }
-    .mini-switch span {
-      width: 18px;
-      height: 18px;
-      border-radius: 9999px;
-      background: var(--ink-light);
-      transform: translateX(18px);
-      transition: transform 0.2s ease, opacity 0.2s;
+    .switch.on {
+      background: var(--lime);
     }
-    .mini-switch[data-on="false"] span {
+    .switch span {
+      width: 17px;
+      height: 17px;
+      border-radius: 999px;
+      background: #0D0E11;
       transform: translateX(0);
-      opacity: 0.45;
+      transition: transform 0.18s ease;
+    }
+    .switch:not(.on) span {
+      background: #9CA3AF;
+    }
+    .switch.on span {
+      transform: translateX(17px);
     }
 
-    /* ============================================================
-       ALT SICAK YULAF KREM KART (#EFECE6, R_iç = 22px)
-       ============================================================ */
-    .cream-card {
-      background: var(--cream-card);
-      border-radius: 22px;
-      padding: 18px 14px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
+    /* Alt Sabit Oluştur Çubuğu */
+    .panel-footer {
+      padding: 14px 16px;
+      border-top: 1px solid var(--border-subtle);
+      background: var(--bg-panel);
     }
-
-    .metrics-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-    }
-    .metric-btn {
-      background: transparent;
+    .generate-btn {
+      width: 100%;
+      height: 44px;
       border: none;
-      border-radius: 14px;
-      padding: 6px 4px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      cursor: pointer;
+      border-radius: 10px;
+      background: var(--lime);
+      color: #0D1009;
       font-family: inherit;
-      transition: background 0.14s;
-    }
-    .metric-btn:hover {
-      background: rgba(28, 28, 27, 0.05);
-    }
-    .metric-val {
-      display: inline-flex;
-      align-items: flex-start;
-      line-height: 1;
-      color: var(--ink-dark);
-    }
-    .metric-val strong {
-      font-size: 25px;
-      font-weight: 500;
-      letter-spacing: -0.03em;
-      font-variant-numeric: tabular-nums;
-    }
-    .metric-val sub, .metric-val sup {
-      font-size: 11px;
-      color: var(--ink-muted);
-      margin-left: 2px;
-      margin-top: 2px;
-    }
-    .metric-lbl {
-      font-size: 11.5px;
-      color: var(--ink-muted);
-    }
-
-    .cta-row {
-      display: grid;
-      grid-template-columns: 1.15fr 1fr;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       gap: 8px;
-      align-items: center;
+      box-shadow: 0 6px 20px var(--lime-glow);
+      transition: background 0.16s, transform 0.1s;
     }
-
-    .cand-pill {
-      height: 48px;
-      background: var(--dark-panel);
-      border-radius: 9999px;
-      padding: 4px 8px 4px 4px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    .generate-btn:hover:not(:disabled) {
+      background: var(--lime-hover);
     }
-    .cand-badge {
-      width: 40px;
-      height: 40px;
-      border-radius: 9999px;
-      background: var(--dark-thumb);
-      color: var(--ink-light);
-      font-size: 13px;
-      font-weight: 500;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-variant-numeric: tabular-nums;
+    .generate-btn:active:not(:disabled) {
+      transform: scale(0.985);
     }
-    .cand-steps {
-      display: flex;
-      align-items: center;
-      gap: 2px;
-    }
-    .cand-btn {
-      width: 34px;
-      height: 34px;
-      border: none;
-      border-radius: 9999px;
-      background: transparent;
-      color: var(--ink-light-muted);
-      font-size: 17px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .cand-btn:hover {
-      color: var(--ink-light);
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .generate-pill {
-      height: 48px;
-      border: none;
-      border-radius: 9999px;
-      background: var(--dark-panel);
-      color: var(--ink-light);
-      font-family: inherit;
-      font-size: 15px;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-      cursor: pointer;
-      transition: transform 0.12s ease, background 0.16s ease, opacity 0.16s ease;
-    }
-    .generate-pill:hover {
-      background: #2C2C2A;
-    }
-    .generate-pill:active {
-      transform: scale(0.975);
-    }
-    .generate-pill:disabled {
+    .generate-btn:disabled {
       opacity: 0.65;
       cursor: wait;
     }
 
     /* ============================================================
-       SAĞ TAM EKRAN 3D SAHNE (ÜZERİNDE HİÇBİR ETİKET / KALABALIK YOK)
-       Dış R = 30px, Padding P = 10px => Sahne R = 20px
+       BÖLGE C: ORTA 3D SAHNE (TEMİZ STÜDYO TUVALİ + ALT BAR)
        ============================================================ */
-    .viewport-card {
-      background: var(--stage-card);
-      border-radius: 30px;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      box-shadow: var(--shadow-soft);
-      min-height: 0;
-    }
-
-    .stage-toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      padding: 2px 4px;
-    }
-
-    .view-pills {
-      display: inline-flex;
-      background: var(--cream-track);
-      padding: 3px;
-      border-radius: 9999px;
-      gap: 2px;
-    }
-    .view-pill {
-      border: none;
-      background: transparent;
-      color: var(--ink-muted);
-      font-family: inherit;
-      font-size: 12.5px;
-      font-weight: 500;
-      padding: 7px 14px;
-      border-radius: 9999px;
-      cursor: pointer;
-      transition: all 0.16s ease;
-    }
-    .view-pill.active {
-      background: #FFFFFF;
-      color: var(--ink-dark);
-      font-weight: 600;
-      box-shadow: var(--shadow-pill);
-    }
-
-    .stage-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .status-line {
-      font-size: 12px;
-      color: var(--ink-muted);
-      padding: 0 6px;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .pill-btn-light {
-      height: 38px;
-      padding: 0 15px;
-      border-radius: 9999px;
-      border: 1px solid var(--border-light);
-      background: #FFFFFF;
-      color: var(--ink-dark);
-      font-family: inherit;
-      font-size: 12.5px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .pill-btn-light:hover {
-      background: var(--cream-card);
-    }
-
-    .pill-btn-dark {
-      height: 38px;
-      padding: 0 18px;
-      border-radius: 9999px;
-      border: none;
-      background: var(--dark-panel);
-      color: var(--ink-light);
-      font-family: inherit;
-      font-size: 12.5px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .pill-btn-dark:disabled {
-      opacity: 0.35;
-      cursor: not-allowed;
-    }
-
-    /* Saf 3D Kanvas — Üzerinde sıfır yazı / rozet */
-    .stage-canvas-wrap {
-      flex: 1;
-      border-radius: 20px;
-      background: radial-gradient(circle at 50% 45%, #282725 0%, #191918 85%);
+    .viewport-stage {
+      position: relative;
+      background: radial-gradient(circle at 50% 42%, #1E2028 0%, #0E0F13 78%);
       overflow: hidden;
-      min-height: 0;
     }
-
     #viewport {
       width: 100%;
       height: 100%;
       display: block;
       cursor: grab;
     }
-    #viewport:active {
-      cursor: grabbing;
+    #viewport:active { cursor: grabbing; }
+
+    /* Yüzen Alt Görünüm Çubuğu (Meshy Viewport Dock) */
+    .floating-dock {
+      position: absolute;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(22, 24, 31, 0.86);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border-strong);
+      border-radius: 12px;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    }
+    .dock-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 7px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.14s ease;
+      white-space: nowrap;
+    }
+    .dock-btn:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .dock-btn.active {
+      background: var(--bg-hover);
+      color: var(--lime);
+      font-weight: 600;
+    }
+    .dock-sep {
+      width: 1px;
+      height: 18px;
+      background: var(--border-subtle);
+      margin: 0 3px;
+    }
+
+    /* ============================================================
+       BÖLGE D: SAĞ VARLIKLAR / GEÇMİŞ PANELİ (MESHY ASSETS DRAWER)
+       ============================================================ */
+    .assets-panel {
+      background: var(--bg-panel);
+      border-left: 1px solid var(--border-subtle);
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+    }
+    .assets-head {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 2px;
+    }
+    .assets-count {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .asset-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .asset-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 10px;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      font-family: inherit;
+      color: var(--text-primary);
+    }
+    .asset-item:hover {
+      background: var(--bg-hover);
+    }
+    .asset-item.active {
+      border-color: var(--lime);
+    }
+    .asset-title {
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 4px;
+    }
+    .asset-meta {
+      font-size: 11px;
+      color: var(--text-muted);
     }
   </style>
 </head>
 <body>
-  <div class="studio">
-    <!-- SOL STÜDYO KONTROLÜ -->
-    <aside class="sidebar">
-      <div class="sidebar-top">
-        <div class="brand-row">
-          <span class="brand-name">Redis3D</span>
-          <button class="pro-pill" id="proToggle" data-pro="true" title="Pro Kalite Modu">
-            <span class="pro-dot">Pro</span>
-          </button>
+  <!-- ÜST BAR -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">R</div>
+      <span class="brand-text">Redis3D</span>
+      <span class="workspace-crumb">Çalışma Alanı</span>
+    </div>
+
+    <div class="workflow-tabs">
+      <button class="wf-tab active" data-wf="pbr">Modelle</button>
+      <button class="wf-tab" data-wf="uv">Doku</button>
+      <button class="wf-tab" data-wf="wire">Yeniden Ör</button>
+      <button class="wf-tab" data-wf="bone">İskelet</button>
+    </div>
+
+    <div class="topbar-right">
+      <div class="status-chip">
+        <span class="dot" id="statusDot"></span>
+        <span id="statusText">Hazır</span>
+      </div>
+      <button class="export-btn" id="downloadBtn" disabled>İndir (.GLB)</button>
+    </div>
+  </header>
+
+  <!-- 4 BÖLGELİ MESHY WORKSPACE -->
+  <div class="workspace">
+    <!-- 1. SOL İKON RAYI -->
+    <nav class="icon-rail" aria-label="Araçlar">
+      <button class="rail-item active" data-input="text">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
+        <span>Metin</span>
+      </button>
+      <button class="rail-item" data-input="image">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span>Görsel</span>
+      </button>
+      <button class="rail-item" data-view="uv">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8M3.6 15h16.8M11.5 3a17 17 0 0 0 0 18"/></svg>
+        <span>Doku</span>
+      </button>
+      <button class="rail-item" data-view="bone">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="5" r="2"/><path d="M12 7v8l-4 5M12 15l4 5M8 10h8"/></svg>
+        <span>İskelet</span>
+      </button>
+      <button class="rail-item" data-view="print">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        <span>3D Baskı</span>
+      </button>
+    </nav>
+
+    <!-- 2. SOL ÜRETİM PANELİ -->
+    <aside class="creator-panel">
+      <div class="panel-scroll">
+        <div class="seg-bar">
+          <button class="seg-btn active" data-input="text">Metinden 3D</button>
+          <button class="seg-btn" data-input="image">Görselden 3D</button>
         </div>
 
-        <div class="mode-track" role="tablist">
-          <button class="mode-tab active" data-tab="text">Metinden 3D</button>
-          <button class="mode-tab" data-tab="image">Görselden 3D</button>
+        <div id="box-text">
+          <div class="sec-label"><span>Açıklama (Prompt)</span></div>
+          <textarea class="prompt-area" id="prompt" placeholder="Oluşturmak istediğiniz 3D modeli anlatın...">keskin hatlı zırhlı robot kaskı</textarea>
         </div>
 
-        <div class="input-pane active" id="tab-text">
-          <textarea class="prompt-box" id="prompt" placeholder="Üretmek istediğiniz 3D nesneyi yazın...">keskin hatlı zırhlı robot kaskı</textarea>
-        </div>
-
-        <div class="input-pane" id="tab-image">
-          <div class="drop-zone" id="dropZone">
-            <img id="previewImg" alt="Referans Görsel" />
-            <button class="clear-img-btn" id="clearImgBtn" type="button">&times;</button>
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="4"></rect>
-              <circle cx="8.5" cy="8.5" r="1.5"></circle>
-              <polyline points="21 15 16 10 5 21"></polyline>
-            </svg>
-            <span style="font-size:13px;font-weight:500;">Fotoğraf Seç veya Sürükle</span>
-            <span style="font-size:11px;opacity:0.6;">PNG, JPG, WEBP</span>
+        <div id="box-image" style="display:none;">
+          <div class="sec-label"><span>Referans Görsel</span></div>
+          <div class="upload-box" id="dropZone">
+            <img id="previewImg" alt="Önizleme" />
+            <button class="clear-img" id="clearImgBtn" type="button">&times;</button>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span>Fotoğraf Seç veya Sürükle</span>
             <input type="file" id="imageFile" accept="image/*" hidden />
           </div>
         </div>
 
-        <div class="rig-row">
-          <span>Otomatik İskelet (Rig)</span>
-          <button class="mini-switch" id="rigSwitch" data-on="true" aria-label="Otomatik İskelet">
-            <span></span>
-          </button>
+        <div>
+          <div class="sec-label"><span>Sanat Stili</span></div>
+          <div class="style-grid">
+            <button class="style-card active" data-style="realistic">
+              <span class="style-swatch" style="background:linear-gradient(135deg,#94a3b8,#334155);"></span>
+              <span>Gerçekçi</span>
+            </button>
+            <button class="style-card" data-style="stylized">
+              <span class="style-swatch" style="background:linear-gradient(135deg,#f59e0b,#b45309);"></span>
+              <span>Stilize</span>
+            </button>
+            <button class="style-card" data-style="hardsurface">
+              <span class="style-swatch" style="background:linear-gradient(135deg,#bdf347,#3f6212);"></span>
+              <span>Sert Yüzey</span>
+            </button>
+            <button class="style-card" data-style="lowpoly">
+              <span class="style-swatch" style="background:linear-gradient(135deg,#38bdf8,#1d4ed8);"></span>
+              <span>Düşük Poligon</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="option-card">
+          <div class="opt-row">
+            <span>Kalite / Hız</span>
+            <div class="chip-group" id="nfeChips">
+              <button class="mini-chip active" data-nfe="1">Hızlı</button>
+              <button class="mini-chip" data-nfe="2">Dengeli</button>
+              <button class="mini-chip" data-nfe="4">Detaylı</button>
+            </div>
+          </div>
+
+          <div class="opt-row">
+            <span>Poligon</span>
+            <div class="chip-group" id="quadChips">
+              <button class="mini-chip" data-q="256">256</button>
+              <button class="mini-chip active" data-q="512">512</button>
+              <button class="mini-chip" data-q="1024">1K</button>
+              <button class="mini-chip" data-q="2048">2K</button>
+            </div>
+          </div>
+
+          <div class="opt-row">
+            <span>Aday Sayısı</span>
+            <div class="chip-group" id="candChips">
+              <button class="mini-chip" data-c="1">1</button>
+              <button class="mini-chip active" data-c="4">4</button>
+              <button class="mini-chip" data-c="8">8</button>
+            </div>
+          </div>
+
+          <div class="opt-row">
+            <span>Simetri Kilidi</span>
+            <button class="switch on" id="symSwitch" type="button"><span></span></button>
+          </div>
+
+          <div class="opt-row">
+            <span>Otomatik İskelet (Rig)</span>
+            <button class="switch on" id="rigSwitch" type="button"><span></span></button>
+          </div>
         </div>
       </div>
 
-      <!-- ALT KREM AKSİYON KARTI -->
-      <div class="cream-card">
-        <div class="metrics-row">
-          <button class="metric-btn" id="quadsBtn" type="button">
-            <span class="metric-val"><strong id="quadsVal">512</strong><sup>q</sup></span>
-            <span class="metric-lbl">Poligon</span>
-          </button>
-          <button class="metric-btn" id="stepsBtn" type="button">
-            <span class="metric-val"><strong id="stepsVal">1</strong><sup>x</sup></span>
-            <span class="metric-lbl">Adım Hızı</span>
-          </button>
-        </div>
-
-        <div class="cta-row">
-          <div class="cand-pill" title="Aday Sayısı">
-            <span class="cand-badge" id="candBadge">4x</span>
-            <div class="cand-steps">
-              <button class="cand-btn" id="candMinus" type="button">&minus;</button>
-              <button class="cand-btn" id="candPlus" type="button">+</button>
-            </div>
-          </div>
-          <button class="generate-pill" id="genBtn" type="button">Oluştur</button>
-        </div>
+      <div class="panel-footer">
+        <button class="generate-btn" id="genBtn" type="button">Oluştur</button>
       </div>
     </aside>
 
-    <!-- SAĞ SAF 3D SAHNE -->
-    <main class="viewport-card">
-      <div class="stage-toolbar">
-        <div class="view-pills">
-          <button class="view-pill active" data-mode="pbr" id="modePbr">Doku</button>
-          <button class="view-pill" data-mode="wire" id="modeWire">Tel Kafes</button>
-          <button class="view-pill" data-mode="uv" id="modeUv">UV</button>
-          <button class="view-pill" data-mode="bone" id="modeBone">İskelet</button>
-          <button class="view-pill" data-mode="print" id="modePrint">3D Baskı</button>
-        </div>
+    <!-- 3. ORTA 3D SAHNE -->
+    <main class="viewport-stage">
+      <canvas id="viewport"></canvas>
 
-        <div class="stage-actions">
-          <span class="status-line" id="status">Hazır</span>
-          <button class="pill-btn-light" id="spinBtn" type="button">Döndür</button>
-          <button class="pill-btn-dark" id="downloadBtn" type="button" disabled>İndir (.GLB)</button>
-        </div>
-      </div>
-
-      <div class="stage-canvas-wrap">
-        <canvas id="viewport"></canvas>
+      <div class="floating-dock">
+        <button class="dock-btn active" data-mode="pbr">Doku</button>
+        <button class="dock-btn" data-mode="wire">Tel Kafes</button>
+        <button class="dock-btn" data-mode="uv">UV</button>
+        <button class="dock-btn" data-mode="bone">İskelet</button>
+        <button class="dock-btn" data-mode="print">3D Baskı</button>
+        <div class="dock-sep"></div>
+        <button class="dock-btn active" id="spinBtn">Döndür</button>
+        <button class="dock-btn" id="resetCamBtn">Sıfırla</button>
       </div>
     </main>
+
+    <!-- 4. SAĞ VARLIKLAR / GEÇMİŞ PANELİ -->
+    <aside class="assets-panel">
+      <div class="assets-head">
+        <span>Üretilen Modeller</span>
+        <span class="assets-count" id="assetCount">0</span>
+      </div>
+      <div class="asset-list" id="assetList">
+        <div style="font-size:12px;color:var(--text-muted);padding:12px 4px;">
+          Henüz model oluşturulmadı. Soldan “Oluştur”a basın.
+        </div>
+      </div>
+    </aside>
   </div>
 
   <script>
     const state = {
-      candidates: 4,
+      inputMode: "text",
+      style: "realistic",
       nfeSteps: 1,
       retopoQuads: 512,
+      candidates: 4,
+      symLock: true,
       autoRig: true,
-      proMode: true,
       imageB64: null,
-      inspectorMode: "pbr",
+      viewMode: "pbr",
       turntable: true,
-      lastGlbBlob: null,
-      mesh: null,
       rotY: 0.55,
       rotX: 0.30,
       zoom: 1.85,
       dragging: false,
       lastPt: { x: 0, y: 0 },
+      mesh: null,
+      lastGlbBlob: null,
+      history: [],
     };
 
-    const QUADS = [256, 512, 1024, 2048];
-    const STEPS = [1, 2, 4];
+    // Girdi modu (Metin / Görsel) senkronizasyonu
+    function setInputMode(mode) {
+      state.inputMode = mode;
+      document.getElementById("box-text").style.display = mode === "text" ? "block" : "none";
+      document.getElementById("box-image").style.display = mode === "image" ? "block" : "none";
+      document.querySelectorAll(".seg-btn").forEach((b) => b.classList.toggle("active", b.dataset.input === mode));
+      document.querySelectorAll(".rail-item[data-input]").forEach((b) => b.classList.toggle("active", b.dataset.input === mode));
+    }
 
-    // Sekme geçişi (Metinden 3D / Görselden 3D)
-    document.querySelectorAll(".mode-tab").forEach((tab) => {
-      tab.onclick = () => {
-        document.querySelectorAll(".mode-tab").forEach((t) => t.classList.remove("active"));
-        tab.classList.add("active");
-        document.querySelectorAll(".input-pane").forEach((p) => p.classList.remove("active"));
-        document.getElementById(`tab-${tab.dataset.tab}`).classList.add("active");
+    document.querySelectorAll(".seg-btn").forEach((b) => (b.onclick = () => setInputMode(b.dataset.input)));
+    document.querySelectorAll(".rail-item[data-input]").forEach((b) => (b.onclick = () => setInputMode(b.dataset.input)));
+
+    // Görünüm modu senkronizasyonu (Üst çubuk, Sol ray, Alt dock)
+    function setViewMode(mode) {
+      state.viewMode = mode;
+      document.querySelectorAll(".dock-btn[data-mode]").forEach((b) => b.classList.toggle("active", b.dataset.mode === mode));
+      document.querySelectorAll(".wf-tab").forEach((b) => b.classList.toggle("active", b.dataset.wf === mode));
+      document.querySelectorAll(".rail-item[data-view]").forEach((b) => b.classList.toggle("active", b.dataset.view === mode));
+    }
+    document.querySelectorAll(".dock-btn[data-mode]").forEach((b) => (b.onclick = () => setViewMode(b.dataset.mode)));
+    document.querySelectorAll(".wf-tab").forEach((b) => (b.onclick = () => setViewMode(b.dataset.wf)));
+    document.querySelectorAll(".rail-item[data-view]").forEach((b) => (b.onclick = () => setViewMode(b.dataset.view)));
+
+    // Stil seçimi
+    document.querySelectorAll(".style-card").forEach((c) => {
+      c.onclick = () => {
+        document.querySelectorAll(".style-card").forEach((x) => x.classList.remove("active"));
+        c.classList.add("active");
+        state.style = c.dataset.style;
       };
     });
 
-    // Pro & Oto İskelet anahtarları
-    const proToggle = document.getElementById("proToggle");
-    proToggle.onclick = () => {
-      state.proMode = !state.proMode;
-      proToggle.dataset.pro = String(state.proMode);
-    };
+    // Ayar çipleri
+    document.querySelectorAll("#nfeChips .mini-chip").forEach((b) => {
+      b.onclick = () => {
+        document.querySelectorAll("#nfeChips .mini-chip").forEach((x) => x.classList.remove("active"));
+        b.classList.add("active");
+        state.nfeSteps = Number(b.dataset.nfe);
+      };
+    });
+    document.querySelectorAll("#quadChips .mini-chip").forEach((b) => {
+      b.onclick = () => {
+        document.querySelectorAll("#quadChips .mini-chip").forEach((x) => x.classList.remove("active"));
+        b.classList.add("active");
+        state.retopoQuads = Number(b.dataset.q);
+      };
+    });
+    document.querySelectorAll("#candChips .mini-chip").forEach((b) => {
+      b.onclick = () => {
+        document.querySelectorAll("#candChips .mini-chip").forEach((x) => x.classList.remove("active"));
+        b.classList.add("active");
+        state.candidates = Number(b.dataset.c);
+      };
+    });
 
+    // Switchler
+    const symSwitch = document.getElementById("symSwitch");
+    symSwitch.onclick = () => {
+      state.symLock = !state.symLock;
+      symSwitch.classList.toggle("on", state.symLock);
+    };
     const rigSwitch = document.getElementById("rigSwitch");
     rigSwitch.onclick = () => {
       state.autoRig = !state.autoRig;
-      rigSwitch.dataset.on = String(state.autoRig);
+      rigSwitch.classList.toggle("on", state.autoRig);
     };
 
-    // Metrikler
-    document.getElementById("quadsBtn").onclick = () => {
-      state.retopoQuads = QUADS[(QUADS.indexOf(state.retopoQuads) + 1) % QUADS.length];
-      document.getElementById("quadsVal").textContent = state.retopoQuads;
-    };
-    document.getElementById("stepsBtn").onclick = () => {
-      state.nfeSteps = STEPS[(STEPS.indexOf(state.nfeSteps) + 1) % STEPS.length];
-      document.getElementById("stepsVal").textContent = state.nfeSteps;
-    };
-
-    // Aday sayacı
-    document.getElementById("candMinus").onclick = () => {
-      state.candidates = Math.max(1, state.candidates - 1);
-      document.getElementById("candBadge").textContent = `${state.candidates}x`;
-    };
-    document.getElementById("candPlus").onclick = () => {
-      state.candidates = Math.min(8, state.candidates + 1);
-      document.getElementById("candBadge").textContent = `${state.candidates}x`;
-    };
-
-    // Görünüm modları
-    document.querySelectorAll(".view-pill").forEach((btn) => {
-      btn.onclick = () => {
-        document.querySelectorAll(".view-pill").forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        state.inspectorMode = btn.dataset.mode;
-      };
-    });
-
-    document.getElementById("spinBtn").onclick = () => {
+    // Kamera düğmeleri
+    const spinBtn = document.getElementById("spinBtn");
+    spinBtn.onclick = () => {
       state.turntable = !state.turntable;
-      document.getElementById("spinBtn").style.opacity = state.turntable ? "1" : "0.55";
+      spinBtn.classList.toggle("active", state.turntable);
+    };
+    document.getElementById("resetCamBtn").onclick = () => {
+      state.rotY = 0.55;
+      state.rotX = 0.30;
+      state.zoom = 1.85;
     };
 
     // Fotoğraf yükleme
@@ -708,120 +895,105 @@
     const imageFile = document.getElementById("imageFile");
     const previewImg = document.getElementById("previewImg");
 
-    function loadImgFile(file) {
+    function loadImg(file) {
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        const res = String(reader.result || "");
-        state.imageB64 = res.includes(",") ? res.split(",")[1] : res;
-        previewImg.src = res;
-        dropZone.classList.add("has-image");
+      const r = new FileReader();
+      r.onload = () => {
+        const s = String(r.result || "");
+        state.imageB64 = s.includes(",") ? s.split(",")[1] : s;
+        previewImg.src = s;
+        dropZone.classList.add("has-img");
       };
-      reader.readAsDataURL(file);
+      r.readAsDataURL(file);
     }
-
-    dropZone.onclick = (e) => {
-      if (e.target.id === "clearImgBtn") return;
-      imageFile.click();
-    };
-    imageFile.onchange = (e) => loadImgFile(e.target.files?.[0]);
+    dropZone.onclick = (e) => { if (e.target.id !== "clearImgBtn") imageFile.click(); };
+    imageFile.onchange = (e) => loadImg(e.target.files?.[0]);
     dropZone.ondragover = (e) => e.preventDefault();
-    dropZone.ondrop = (e) => {
-      e.preventDefault();
-      loadImgFile(e.dataTransfer?.files?.[0]);
-    };
+    dropZone.ondrop = (e) => { e.preventDefault(); loadImg(e.dataTransfer?.files?.[0]); };
     document.getElementById("clearImgBtn").onclick = (e) => {
       e.stopPropagation();
       state.imageB64 = null;
       previewImg.src = "";
       imageFile.value = "";
-      dropZone.classList.remove("has-image");
+      dropZone.classList.remove("has-img");
     };
 
-    // GLB Çözücü
-    function parseGlbBuffer(buffer) {
+    // GLB Okuyucu
+    function parseGlb(buffer) {
       const view = new DataView(buffer);
       if (view.getUint32(0, true) !== 0x46546C67) return null;
       const jsonLen = view.getUint32(12, true);
       const gltf = JSON.parse(new TextDecoder().decode(new Uint8Array(buffer, 20, jsonLen)));
-      const binOffset = 20 + jsonLen + 8;
+      const binOff = 20 + jsonLen + 8;
       const prim = gltf.meshes?.[0]?.primitives?.[0];
       if (!prim) return null;
 
-      function readAcc(idx) {
-        const acc = gltf.accessors[idx];
-        const bv = gltf.bufferViews[acc.bufferView];
-        const off = binOffset + (bv.byteOffset || 0) + (acc.byteOffset || 0);
-        const k = acc.type === "VEC3" ? 3 : acc.type === "VEC2" ? 2 : acc.type === "VEC4" ? 4 : 1;
-        const n = acc.count * k;
-        if (acc.componentType === 5126) return new Float32Array(buffer, off, n);
-        if (acc.componentType === 5125) return new Uint32Array(buffer, off, n);
-        if (acc.componentType === 5123) return new Uint16Array(buffer, off, n);
+      function acc(i) {
+        const a = gltf.accessors[i];
+        const bv = gltf.bufferViews[a.bufferView];
+        const off = binOff + (bv.byteOffset || 0) + (a.byteOffset || 0);
+        const k = a.type === "VEC3" ? 3 : a.type === "VEC2" ? 2 : a.type === "VEC4" ? 4 : 1;
+        const n = a.count * k;
+        if (a.componentType === 5126) return new Float32Array(buffer, off, n);
+        if (a.componentType === 5125) return new Uint32Array(buffer, off, n);
+        if (a.componentType === 5123) return new Uint16Array(buffer, off, n);
         return null;
       }
 
-      const pos = readAcc(prim.attributes.POSITION);
-      const idx = prim.indices !== undefined ? readAcc(prim.indices) : null;
-      const nVerts = pos.length / 3;
+      const pos = acc(prim.attributes.POSITION);
+      const idx = prim.indices !== undefined ? acc(prim.indices) : null;
+      const nV = pos.length / 3;
       let cx = 0, cy = 0, cz = 0;
-      for (let i = 0; i < nVerts; i++) {
-        cx += pos[i * 3]; cy += pos[i * 3 + 1]; cz += pos[i * 3 + 2];
-      }
-      cx /= Math.max(1, nVerts); cy /= Math.max(1, nVerts); cz /= Math.max(1, nVerts);
+      for (let i = 0; i < nV; i++) { cx += pos[i*3]; cy += pos[i*3+1]; cz += pos[i*3+2]; }
+      cx /= Math.max(1, nV); cy /= Math.max(1, nV); cz /= Math.max(1, nV);
       let maxR = 1e-5;
-      for (let i = 0; i < nVerts; i++) {
-        maxR = Math.max(maxR, Math.hypot(pos[i * 3] - cx, pos[i * 3 + 1] - cy, pos[i * 3 + 2] - cz));
-      }
+      for (let i = 0; i < nV; i++) maxR = Math.max(maxR, Math.hypot(pos[i*3]-cx, pos[i*3+1]-cy, pos[i*3+2]-cz));
       const normPos = new Float32Array(pos.length);
-      for (let i = 0; i < nVerts; i++) {
-        normPos[i * 3] = (pos[i * 3] - cx) / maxR;
-        normPos[i * 3 + 1] = (pos[i * 3 + 1] - cy) / maxR;
-        normPos[i * 3 + 2] = (pos[i * 3 + 2] - cz) / maxR;
+      for (let i = 0; i < nV; i++) {
+        normPos[i*3] = (pos[i*3]-cx)/maxR;
+        normPos[i*3+1] = (pos[i*3+1]-cy)/maxR;
+        normPos[i*3+2] = (pos[i*3+2]-cz)/maxR;
       }
       const faces = [];
-      if (idx) {
-        for (let i = 0; i < idx.length; i += 3) faces.push([idx[i], idx[i + 1], idx[i + 2]]);
-      } else {
-        for (let i = 0; i < nVerts; i += 3) faces.push([i, i + 1, i + 2]);
-      }
-      return { pos: normPos, faces, vertsCount: nVerts };
+      if (idx) for (let i = 0; i < idx.length; i += 3) faces.push([idx[i], idx[i+1], idx[i+2]]);
+      else for (let i = 0; i < nV; i += 3) faces.push([i, i+1, i+2]);
+      return { pos: normPos, faces, vertsCount: nV };
     }
 
     function buildStarterMesh() {
       const phi = (1 + Math.sqrt(5)) / 2;
-      const rawV = [
-        [-1, phi, 0], [1, phi, 0], [-1, -phi, 0], [1, -phi, 0],
-        [0, -1, phi], [0, 1, phi], [0, -1, -phi], [0, 1, -phi],
-        [phi, 0, -1], [phi, 0, 1], [-phi, 0, -1], [-phi, 0, 1],
-      ].map((v) => { const l = Math.hypot(...v); return [v[0] / l, v[1] / l, v[2] / l]; });
-      const rawF = [
+      const v = [
+        [-1,phi,0],[1,phi,0],[-1,-phi,0],[1,-phi,0],
+        [0,-1,phi],[0,1,phi],[0,-1,-phi],[0,1,-phi],
+        [phi,0,-1],[phi,0,1],[-phi,0,-1],[-phi,0,1]
+      ].map((p) => { const l = Math.hypot(...p); return [p[0]/l, p[1]/l, p[2]/l]; });
+      const f = [
         [0,11,5],[0,5,1],[0,1,7],[0,7,10],[0,10,11],
         [1,5,9],[5,11,4],[11,10,2],[10,7,6],[7,1,8],
         [3,9,4],[3,4,2],[3,2,6],[3,6,8],[3,8,9],
-        [4,9,5],[2,4,11],[6,2,10],[8,6,7],[9,8,1],
+        [4,9,5],[2,4,11],[6,2,10],[8,6,7],[9,8,1]
       ];
-      const cache = new Map();
+      const m = new Map();
       const mid = (a, b) => {
         const k = a < b ? `${a}_${b}` : `${b}_${a}`;
-        if (cache.has(k)) return cache.get(k);
-        const m = [0.5*(rawV[a][0]+rawV[b][0]), 0.5*(rawV[a][1]+rawV[b][1]), 0.5*(rawV[a][2]+rawV[b][2])];
-        const l = Math.hypot(...m);
-        const idx = rawV.length;
-        rawV.push([m[0] / l, m[1] / l, m[2] / l]);
-        cache.set(k, idx);
+        if (m.has(k)) return m.get(k);
+        const p = [0.5*(v[a][0]+v[b][0]), 0.5*(v[a][1]+v[b][1]), 0.5*(v[a][2]+v[b][2])];
+        const l = Math.hypot(...p);
+        const idx = v.length;
+        v.push([p[0]/l, p[1]/l, p[2]/l]);
+        m.set(k, idx);
         return idx;
       };
       const faces = [];
-      for (const [a, b, c] of rawF) {
-        const ab = mid(a, b), bc = mid(b, c), ca = mid(c, a);
-        faces.push([a, ab, ca], [b, bc, ab], [c, ca, bc], [ab, bc, ca]);
+      for (const [a, b, c] of f) {
+        const ab = mid(a,b), bc = mid(b,c), ca = mid(c,a);
+        faces.push([a,ab,ca],[b,bc,ab],[c,ca,bc],[ab,bc,ca]);
       }
-      return { pos: new Float32Array(rawV.flat()), faces, vertsCount: rawV.length };
+      return { pos: new Float32Array(v.flat()), faces, vertsCount: v.length };
     }
-
     state.mesh = buildStarterMesh();
 
-    // 3D Çizim Döngüsü
+    // 3D Sahne Çizimi
     const canvas = document.getElementById("viewport");
     const ctx = canvas.getContext("2d");
 
@@ -850,14 +1022,14 @@
       state.zoom = Math.max(1.15, Math.min(4.2, state.zoom + e.deltaY * 0.0014));
     }, { passive: false });
 
-    function renderLoop() {
-      requestAnimationFrame(renderLoop);
+    function draw() {
+      requestAnimationFrame(draw);
       if (state.turntable && !state.dragging) state.rotY += 0.004;
 
       const w = canvas.width, h = canvas.height;
       ctx.clearRect(0, 0, w, h);
 
-      const cx = w * 0.5, cy = h * 0.5;
+      const cx = w * 0.5, cy = h * 0.48;
       const scale = Math.min(w, h) * 0.34 * state.zoom;
       const cosY = Math.cos(state.rotY), sinY = Math.sin(state.rotY);
       const cosX = Math.cos(state.rotX), sinX = Math.sin(state.rotX);
@@ -871,94 +1043,111 @@
         return [cx + x1 * scale * p, cy - y2 * scale * p, z2, x1, y2];
       }
 
-      // Sade döner tabla halkası
-      ctx.strokeStyle = "rgba(239, 236, 230, 0.08)";
+      // Meshy Stüdyo Perspektifli Zemin Izgarası
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.045)";
       ctx.lineWidth = 1;
-      ctx.beginPath();
-      for (let i = 0; i <= 48; i++) {
-        const a = (i / 48) * Math.PI * 2;
-        const [px, py] = proj(Math.cos(a) * 1.25, -1.05, Math.sin(a) * 1.25);
-        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      for (let g = -2; g <= 2; g += 0.5) {
+        const [x1, y1] = proj(g, -1.05, -2);
+        const [x2, y2] = proj(g, -1.05, 2);
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+
+        const [z1x, z1y] = proj(-2, -1.05, g);
+        const [z2x, z2y] = proj(2, -1.05, g);
+        ctx.beginPath(); ctx.moveTo(z1x, z1y); ctx.lineTo(z2x, z2y); ctx.stroke();
       }
-      ctx.stroke();
 
       const mesh = state.mesh;
       if (!mesh) return;
       const pv = new Array(mesh.vertsCount);
       for (let i = 0; i < mesh.vertsCount; i++) {
-        pv[i] = proj(mesh.pos[i * 3], mesh.pos[i * 3 + 1], mesh.pos[i * 3 + 2]);
+        pv[i] = proj(mesh.pos[i*3], mesh.pos[i*3+1], mesh.pos[i*3+2]);
       }
 
       const tris = [];
       for (let i = 0; i < mesh.faces.length; i++) {
         const [ia, ib, ic] = mesh.faces[i];
         const a = pv[ia], b = pv[ib], c = pv[ic];
-        const ux = b[3] - a[3], uy = b[4] - a[4], uz = b[2] - a[2];
-        const vx = c[3] - a[3], vy = c[4] - a[4], vz = c[2] - a[2];
-        const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
-        if (nz <= 0 && state.inspectorMode !== "wire") continue;
+        const ux = b[3]-a[3], uy = b[4]-a[4], uz = b[2]-a[2];
+        const vx = c[3]-a[3], vy = c[4]-a[4], vz = c[2]-a[2];
+        const nx = uy*vz - uz*vy, ny = uz*vx - ux*vz, nz = ux*vy - uy*vx;
+        if (nz <= 0 && state.viewMode !== "wire") continue;
         const nl = Math.hypot(nx, ny, nz) || 1;
-        tris.push({ a, b, c, z: (a[2] + b[2] + c[2]) / 3, nx: nx / nl, ny: ny / nl, nz: nz / nl });
+        tris.push({ a, b, c, z: (a[2]+b[2]+c[2])/3, nx: nx/nl, ny: ny/nl, nz: nz/nl });
       }
       tris.sort((u, v) => u.z - v.z);
 
       for (const f of tris) {
-        const ndotl = Math.max(0.16, f.nx * -0.45 + f.ny * 0.62 + f.nz * 0.65);
+        const ndotl = Math.max(0.16, f.nx * -0.45 + f.ny * 0.65 + f.nz * 0.62);
         ctx.beginPath();
         ctx.moveTo(f.a[0], f.a[1]);
         ctx.lineTo(f.b[0], f.b[1]);
         ctx.lineTo(f.c[0], f.c[1]);
         ctx.closePath();
 
-        if (state.inspectorMode === "pbr") {
-          const lum = Math.round(64 + ndotl * 156);
-          ctx.fillStyle = `rgb(${lum}, ${Math.round(lum * 0.97)}, ${Math.round(lum * 0.92)})`;
+        if (state.viewMode === "pbr") {
+          const v = Math.round(58 + ndotl * 165);
+          ctx.fillStyle = `rgb(${v}, ${v + 2}, ${v + 6})`;
           ctx.fill();
-        } else if (state.inspectorMode === "wire") {
-          ctx.strokeStyle = "rgba(239, 236, 230, 0.55)";
+        } else if (state.viewMode === "wire") {
+          ctx.strokeStyle = "rgba(189, 243, 71, 0.62)";
           ctx.lineWidth = 1;
           ctx.stroke();
-        } else if (state.inspectorMode === "uv") {
-          const chk = (Math.floor((f.a[3] + 1) * 4) + Math.floor((f.a[4] + 1) * 4)) % 2 === 0;
-          const base = chk ? 210 : 95;
-          ctx.fillStyle = `rgb(${Math.round(base * ndotl)}, ${Math.round((base - 12) * ndotl)}, ${Math.round((base - 24) * ndotl)})`;
+        } else if (state.viewMode === "uv") {
+          const chk = (Math.floor((f.a[3]+1)*4) + Math.floor((f.a[4]+1)*4)) % 2 === 0;
+          const b = chk ? 215 : 85;
+          ctx.fillStyle = `rgb(${Math.round(b*ndotl)}, ${Math.round(b*ndotl)}, ${Math.round((b+12)*ndotl)})`;
           ctx.fill();
-        } else if (state.inspectorMode === "bone") {
-          ctx.fillStyle = `rgba(220, 214, 204, ${(0.2 * ndotl).toFixed(2)})`;
+        } else if (state.viewMode === "bone") {
+          ctx.fillStyle = `rgba(229, 231, 235, ${(0.18*ndotl).toFixed(2)})`;
           ctx.fill();
-        } else if (state.inspectorMode === "print") {
-          const s = Math.max(0, 1 - Math.abs(f.ny));
-          ctx.fillStyle = `rgb(${Math.round((145 + s * 88) * ndotl)}, ${Math.round((188 - s * 82) * ndotl)}, ${Math.round((148 - s * 78) * ndotl)})`;
+        } else if (state.viewMode === "print") {
+          const slope = Math.max(0, 1 - Math.abs(f.ny));
+          ctx.fillStyle = `rgb(${Math.round((120+slope*120)*ndotl)}, ${Math.round((210-slope*110)*ndotl)}, ${Math.round(130*ndotl)})`;
           ctx.fill();
         }
       }
 
-      if (state.inspectorMode === "bone") {
-        const joints = [[0,-0.75,0],[0,-0.15,0],[0,0.45,0],[0,0.85,0],[-0.45,0.35,0],[0.45,0.35,0]].map(
-          ([x, y, z]) => proj(x, y, z)
-        );
-        ctx.strokeStyle = "#F2EFE9";
+      if (state.viewMode === "bone") {
+        const j = [[0,-0.75,0],[0,-0.15,0],[0,0.45,0],[0,0.85,0],[-0.45,0.35,0],[0.45,0.35,0]].map(([x,y,z]) => proj(x,y,z));
+        ctx.strokeStyle = "#BDF347";
         ctx.lineWidth = 2.4;
         for (const [u, v] of [[0,1],[1,2],[2,3],[2,4],[2,5]]) {
-          ctx.beginPath();
-          ctx.moveTo(joints[u][0], joints[u][1]);
-          ctx.lineTo(joints[v][0], joints[v][1]);
-          ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(j[u][0], j[u][1]); ctx.lineTo(j[v][0], j[v][1]); ctx.stroke();
         }
-        for (const j of joints) {
-          ctx.fillStyle = "#E2B86B";
-          ctx.beginPath();
-          ctx.arc(j[0], j[1], 5, 0, Math.PI * 2);
-          ctx.fill();
+        for (const pt of j) {
+          ctx.fillStyle = "#FFFFFF";
+          ctx.beginPath(); ctx.arc(pt[0], pt[1], 4.5, 0, Math.PI*2); ctx.fill();
         }
       }
     }
-    requestAnimationFrame(renderLoop);
+    requestAnimationFrame(draw);
 
-    // Oluşturma İsteği
+    // Sağ Varlıklar Listesi Güncelleme
+    function renderHistory() {
+      const list = document.getElementById("assetList");
+      document.getElementById("assetCount").textContent = String(state.history.length);
+      if (state.history.length === 0) return;
+      list.innerHTML = "";
+      state.history.forEach((item, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "asset-item" + (idx === 0 ? " active" : "");
+        btn.innerHTML = `<div class="asset-title">${item.title}</div><div class="asset-meta">${item.ms} ms · ${item.quads} quad</div>`;
+        btn.onclick = () => {
+          document.querySelectorAll(".asset-item").forEach((el) => el.classList.remove("active"));
+          btn.classList.add("active");
+          state.mesh = item.mesh;
+          state.lastGlbBlob = item.blob;
+          document.getElementById("downloadBtn").disabled = false;
+        };
+        list.appendChild(btn);
+      });
+    }
+
+    // Üretim & İndirme
     const genBtn = document.getElementById("genBtn");
     const downloadBtn = document.getElementById("downloadBtn");
-    const statusEl = document.getElementById("status");
+    const statusDot = document.getElementById("statusDot");
+    const statusText = document.getElementById("statusText");
 
     downloadBtn.onclick = () => {
       if (!state.lastGlbBlob) return;
@@ -971,41 +1160,62 @@
     genBtn.onclick = async () => {
       genBtn.disabled = true;
       genBtn.textContent = "Oluşturuluyor...";
-      statusEl.textContent = "Üretiliyor...";
+      statusDot.classList.add("busy");
+      statusText.textContent = "Üretiliyor...";
+
+      const rawPrompt = document.getElementById("prompt").value.trim() || "3d model";
+      const styleMap = {
+        realistic: "realistic PBR surface",
+        stylized: "clean stylized studio art",
+        hardsurface: "sharp beveled hard-surface CAD",
+        lowpoly: "clean faceted low-poly mesh",
+      };
 
       try {
         const res = await fetch("/api/v1/generate", {
           method: "POST",
           headers: { "Content-Type": "application/json", "X-API-Key": "redis3d-local-dev" },
           body: JSON.stringify({
-            prompt: document.getElementById("prompt").value,
-            image_b64: state.imageB64,
+            prompt: `${rawPrompt}, ${styleMap[state.style] || ""}`,
+            image_b64: state.inputMode === "image" ? state.imageB64 : null,
             candidates: state.candidates,
             nfe_steps: state.nfeSteps,
-            patr_steps: state.proMode ? 6 : 2,
+            patr_steps: state.nfeSteps >= 2 ? 6 : 3,
             retopo_quads: state.retopoQuads,
             auto_rig: state.autoRig,
-            sym_lock: state.proMode,
+            sym_lock: state.symLock,
           }),
         });
         if (!res.ok) {
-          statusEl.textContent = `Hata: ${res.status}`;
+          statusText.textContent = `Hata: ${res.status}`;
           return;
         }
         const buf = await res.arrayBuffer();
-        state.lastGlbBlob = new Blob([buf], { type: "model/gltf-binary" });
-        downloadBtn.disabled = false;
-
-        const parsed = parseGlbBuffer(buf);
-        if (parsed) state.mesh = parsed;
-
+        const blob = new Blob([buf], { type: "model/gltf-binary" });
+        const parsed = parseGlb(buf);
         const ms = res.headers.get("X-Latency-Ms") || "?";
-        statusEl.textContent = `Tamamlandı · ${ms} ms`;
-      } catch (err) {
-        statusEl.textContent = "Bağlantı hatası";
+
+        if (parsed) state.mesh = parsed;
+        state.lastGlbBlob = blob;
+        downloadBtn.disabled = false;
+        statusText.textContent = `Hazır · ${ms} ms`;
+
+        if (parsed) {
+          state.history.unshift({
+            title: rawPrompt,
+            ms,
+            quads: state.retopoQuads,
+            mesh: parsed,
+            blob,
+          });
+          renderHistory();
+        }
+      } catch (e) {
+        statusText.textContent = "Bağlantı hatası";
       } finally {
         genBtn.disabled = false;
         genBtn.textContent = "Oluştur";
+        statusDot.classList.remove("busy");
       }
     };
   </script>
